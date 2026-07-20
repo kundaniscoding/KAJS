@@ -24,6 +24,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Building2,
+  CalendarRange,
+  Sunrise,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +80,9 @@ type ViewKey =
   | "dashboard"
   | "portal"
   | "employees"
+  | "departments"
   | "attendance"
+  | "shifts"
   | "leaves"
   | "payroll"
   | "settings";
@@ -84,7 +91,9 @@ const navItems: { key: ViewKey; label: string; icon: React.ComponentType<{ class
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { key: "portal", label: "My Portal", icon: UserCircle2 },
   { key: "employees", label: "Employees", icon: Users },
+  { key: "departments", label: "Departments", icon: Building2 },
   { key: "attendance", label: "Attendance", icon: CalendarClock },
+  { key: "shifts", label: "Shifts", icon: CalendarRange },
   { key: "leaves", label: "Leaves", icon: CalendarDays },
   { key: "payroll", label: "Payroll", icon: Wallet },
   { key: "settings", label: "Settings", icon: Settings },
@@ -102,7 +111,9 @@ function App() {
           {view === "dashboard" && <DashboardView />}
           {view === "portal" && <PortalView />}
           {view === "employees" && <EmployeesView />}
+          {view === "departments" && <DepartmentsView />}
           {view === "attendance" && <AttendanceView />}
+          {view === "shifts" && <ShiftsView />}
           {view === "leaves" && <LeavesView />}
           {view === "payroll" && <PayrollView />}
           {view === "settings" && <SettingsView />}
