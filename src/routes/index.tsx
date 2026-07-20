@@ -1168,8 +1168,8 @@ function ShiftsView() {
               </div>
             ))}
             {week.map((row) => (
-              <>
-                <div key={row.name} className="flex items-center pr-2 font-medium text-slate-700">
+              <div key={row.name} className="contents">
+                <div className="flex items-center pr-2 font-medium text-slate-700">
                   {row.name}
                 </div>
                 {row.cells.map((c, i) => (
@@ -1183,7 +1183,7 @@ function ShiftsView() {
                     {c}
                   </div>
                 ))}
-              </>
+              </div>
             ))}
           </div>
         </CardContent>
