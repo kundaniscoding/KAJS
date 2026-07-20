@@ -24,6 +24,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Building2,
+  CalendarRange,
+  Sunrise,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +80,9 @@ type ViewKey =
   | "dashboard"
   | "portal"
   | "employees"
+  | "departments"
   | "attendance"
+  | "shifts"
   | "leaves"
   | "payroll"
   | "settings";
@@ -84,7 +91,9 @@ const navItems: { key: ViewKey; label: string; icon: React.ComponentType<{ class
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { key: "portal", label: "My Portal", icon: UserCircle2 },
   { key: "employees", label: "Employees", icon: Users },
+  { key: "departments", label: "Departments", icon: Building2 },
   { key: "attendance", label: "Attendance", icon: CalendarClock },
+  { key: "shifts", label: "Shifts", icon: CalendarRange },
   { key: "leaves", label: "Leaves", icon: CalendarDays },
   { key: "payroll", label: "Payroll", icon: Wallet },
   { key: "settings", label: "Settings", icon: Settings },
@@ -102,7 +111,9 @@ function App() {
           {view === "dashboard" && <DashboardView />}
           {view === "portal" && <PortalView />}
           {view === "employees" && <EmployeesView />}
+          {view === "departments" && <DepartmentsView />}
           {view === "attendance" && <AttendanceView />}
+          {view === "shifts" && <ShiftsView />}
           {view === "leaves" && <LeavesView />}
           {view === "payroll" && <PayrollView />}
           {view === "settings" && <SettingsView />}
@@ -983,6 +994,276 @@ function SettingsView() {
           </Card>
         ))}
       </div>
+    </div>
+  );
+}
+
+/* ---------------- Departments ---------------- */
+function DepartmentsView() {
+  const departments = [
+    { name: "Engineering", head: "Marco Chen", employees: 68, openRoles: 5, budget: "$1.24M", tone: "indigo" },
+    { name: "Product", head: "Priya Patel", employees: 22, openRoles: 2, budget: "$480K", tone: "emerald" },
+    { name: "Design", head: "Lena Osei", employees: 14, openRoles: 1, budget: "$310K", tone: "amber" },
+    { name: "Marketing", head: "Jane Smith", employees: 19, openRoles: 3, budget: "$520K", tone: "rose" },
+    { name: "Sales", head: "Liam O'Neil", employees: 41, openRoles: 6, budget: "$980K", tone: "sky" },
+    { name: "Customer Support", head: "Aiko Tanaka", employees: 33, openRoles: 4, budget: "$610K", tone: "violet" },
+    { name: "Finance", head: "Noah Becker", employees: 12, openRoles: 0, budget: "$290K", tone: "slate" },
+    { name: "People Ops", head: "Alex Rivera", employees: 9, openRoles: 1, budget: "$220K", tone: "teal" },
+  ] as const;
+
+  const toneMap: Record<string, string> = {
+    indigo: "bg-indigo-50 text-indigo-700",
+    emerald: "bg-emerald-50 text-emerald-700",
+    amber: "bg-amber-50 text-amber-700",
+    rose: "bg-rose-50 text-rose-700",
+    sky: "bg-sky-50 text-sky-700",
+    violet: "bg-violet-50 text-violet-700",
+    slate: "bg-slate-100 text-slate-700",
+    teal: "bg-teal-50 text-teal-700",
+  };
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Departments"
+        subtitle="Organize your teams, leaders, and hiring pipeline."
+        action={
+          <Button className="bg-indigo-600 hover:bg-indigo-700">
+            <Plus className="mr-2 h-4 w-4" /> New department
+          </Button>
+        }
+      />
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {departments.map((d) => (
+          <Card key={d.name} className="border-slate-200 transition-shadow hover:shadow-md">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div className={cn("grid h-10 w-10 place-items-center rounded-lg", toneMap[d.tone])}>
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <Badge variant="secondary" className="text-[10px]">
+                  {d.openRoles} open
+                </Badge>
+              </div>
+              <div className="mt-4 text-base font-semibold text-slate-900">{d.name}</div>
+              <div className="mt-0.5 text-xs text-slate-500">Led by {d.head}</div>
+              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-3 text-xs">
+                <div>
+                  <div className="text-slate-500">Employees</div>
+                  <div className="font-semibold text-slate-900">{d.employees}</div>
+                </div>
+                <div>
+                  <div className="text-slate-500">Budget</div>
+                  <div className="font-semibold text-slate-900">{d.budget}</div>
+                </div>
+              </div>
+              <div className="mt-4 flex gap-2">
+                <Button variant="outline" size="sm" className="flex-1">
+                  View
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Edit className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Shifts ---------------- */
+function ShiftsView() {
+  const shifts = [
+    { name: "Morning", time: "6:00 AM – 2:00 PM", assigned: 62, icon: Sunrise, tone: "amber" },
+    { name: "Day", time: "9:00 AM – 6:00 PM", assigned: 128, icon: Sun, tone: "indigo" },
+    { name: "Evening", time: "2:00 PM – 10:00 PM", assigned: 34, icon: Clock, tone: "rose" },
+    { name: "Night", time: "10:00 PM – 6:00 AM", assigned: 18, icon: Moon, tone: "slate" },
+  ] as const;
+
+  const toneMap: Record<string, string> = {
+    amber: "bg-amber-50 text-amber-700",
+    indigo: "bg-indigo-50 text-indigo-700",
+    rose: "bg-rose-50 text-rose-700",
+    slate: "bg-slate-100 text-slate-700",
+  };
+
+  const employees = [
+    { name: "John Doe", dept: "Engineering", shift: "Day", start: "9:00 AM", end: "6:00 PM", status: "Active" },
+    { name: "Jane Smith", dept: "Marketing", shift: "Day", start: "9:00 AM", end: "6:00 PM", status: "Active" },
+    { name: "Marco Chen", dept: "Engineering", shift: "Morning", start: "6:00 AM", end: "2:00 PM", status: "Active" },
+    { name: "Priya Patel", dept: "Product", shift: "Evening", start: "2:00 PM", end: "10:00 PM", status: "Active" },
+    { name: "Liam O'Neil", dept: "Sales", shift: "Day", start: "9:00 AM", end: "6:00 PM", status: "On leave" },
+    { name: "Aiko Tanaka", dept: "Support", shift: "Night", start: "10:00 PM", end: "6:00 AM", status: "Active" },
+    { name: "Noah Becker", dept: "Finance", shift: "Day", start: "9:00 AM", end: "6:00 PM", status: "Active" },
+    { name: "Lena Osei", dept: "Design", shift: "Morning", start: "6:00 AM", end: "2:00 PM", status: "Active" },
+  ];
+
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const week = [
+    { name: "Morning", cells: ["M", "M", "M", "M", "M", "-", "-"] },
+    { name: "Day", cells: ["D", "D", "D", "D", "D", "D", "-"] },
+    { name: "Evening", cells: ["E", "E", "E", "E", "E", "E", "-"] },
+    { name: "Night", cells: ["N", "N", "N", "N", "N", "N", "N"] },
+  ];
+
+  const cellTone: Record<string, string> = {
+    M: "bg-amber-100 text-amber-800",
+    D: "bg-indigo-100 text-indigo-800",
+    E: "bg-rose-100 text-rose-800",
+    N: "bg-slate-200 text-slate-700",
+    "-": "bg-slate-50 text-slate-300",
+  };
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Shifts"
+        subtitle="Define shift patterns and see who's scheduled this week."
+        action={
+          <Button className="bg-indigo-600 hover:bg-indigo-700">
+            <Plus className="mr-2 h-4 w-4" /> New shift
+          </Button>
+        }
+      />
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {shifts.map((s) => {
+          const Icon = s.icon;
+          return (
+            <Card key={s.name} className="border-slate-200">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className={cn("grid h-10 w-10 place-items-center rounded-lg", toneMap[s.tone])}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <Badge variant="secondary" className="text-[10px]">
+                    {s.assigned} assigned
+                  </Badge>
+                </div>
+                <div className="mt-4 text-base font-semibold text-slate-900">{s.name} shift</div>
+                <div className="mt-0.5 text-xs text-slate-500">{s.time}</div>
+                <Button variant="outline" size="sm" className="mt-4 w-full">
+                  Manage
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      <Card className="border-slate-200">
+        <CardHeader>
+          <CardTitle className="text-base">Weekly schedule</CardTitle>
+          <p className="text-xs text-slate-500">Coverage across shifts (M=Morning, D=Day, E=Evening, N=Night)</p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-[120px_repeat(7,1fr)] gap-1 text-xs">
+            <div />
+            {days.map((d) => (
+              <div key={d} className="text-center font-medium text-slate-500">
+                {d}
+              </div>
+            ))}
+            {week.map((row) => (
+              <div key={row.name} className="contents">
+                <div className="flex items-center pr-2 font-medium text-slate-700">
+                  {row.name}
+                </div>
+                {row.cells.map((c, i) => (
+                  <div
+                    key={`${row.name}-${i}`}
+                    className={cn(
+                      "grid h-10 place-items-center rounded-md font-semibold",
+                      cellTone[c],
+                    )}
+                  >
+                    {c}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-slate-200">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-base">Employee assignments</CardTitle>
+            <p className="text-xs text-slate-500">Current shift for each team member</p>
+          </div>
+          <Button variant="outline" size="sm">
+            <Download className="mr-2 h-3.5 w-3.5" /> Export
+          </Button>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Employee</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>Shift</TableHead>
+                <TableHead>Start</TableHead>
+                <TableHead>End</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {employees.map((e) => (
+                <TableRow key={e.name}>
+                  <TableCell className="font-medium">{e.name}</TableCell>
+                  <TableCell className="text-slate-600">{e.dept}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{e.shift}</Badge>
+                  </TableCell>
+                  <TableCell className="tabular-nums text-slate-600">{e.start}</TableCell>
+                  <TableCell className="tabular-nums text-slate-600">{e.end}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className={cn(
+                        e.status === "Active"
+                          ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100"
+                          : "bg-amber-100 text-amber-800 hover:bg-amber-100",
+                      )}
+                    >
+                      {e.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Edit className="h-3.5 w-3.5" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3 text-xs text-slate-500">
+            <div>Showing 1–8 of 248</div>
+            <div className="flex items-center gap-1">
+              <Button variant="outline" size="icon" className="h-7 w-7">
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </Button>
+              <Button variant="outline" size="sm" className="h-7 px-2">
+                1
+              </Button>
+              <Button variant="ghost" size="sm" className="h-7 px-2">
+                2
+              </Button>
+              <Button variant="ghost" size="sm" className="h-7 px-2">
+                3
+              </Button>
+              <Button variant="outline" size="icon" className="h-7 w-7">
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
