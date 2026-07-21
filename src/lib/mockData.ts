@@ -38,10 +38,10 @@ export const initialDepartments = [
 ];
 
 export const initialShifts = [
-  { name: "Morning", time: "06:00 AM – 02:00 PM", checkIn: "06:00 AM", checkOut: "02:00 PM", checkInFrom: "05:50 AM", checkInUntil: "06:15 AM", checkOutFrom: "01:50 PM", checkOutUntil: "02:30 PM", assigned: 62,  iconName: "Sunrise", tone: "amber" },
-  { name: "Day",     time: "09:00 AM – 06:00 PM", checkIn: "09:00 AM", checkOut: "06:00 PM", checkInFrom: "08:00 AM", checkInUntil: "09:15 AM", checkOutFrom: "05:45 PM", checkOutUntil: "07:00 PM", assigned: 128, iconName: "Sun",     tone: "indigo" },
-  { name: "Evening", time: "02:00 PM – 10:00 PM", checkIn: "02:00 PM", checkOut: "10:00 PM", checkInFrom: "01:50 PM", checkInUntil: "02:15 PM", checkOutFrom: "09:45 PM", checkOutUntil: "10:30 PM", assigned: 34,  iconName: "Clock",   tone: "rose" },
-  { name: "Night",   time: "10:00 PM – 06:00 AM", checkIn: "10:00 PM", checkOut: "06:00 AM", checkInFrom: "09:40 PM", checkInUntil: "10:20 PM", checkOutFrom: "05:45 AM", checkOutUntil: "06:30 AM", assigned: 18,  iconName: "Moon",    tone: "slate",  crossDay: true  },
+  { name: "Morning", time: "06:00 AM – 02:00 PM", checkIn: "06:00 AM", checkOut: "02:00 PM", checkInFrom: "05:50 AM", checkInUntil: "06:15 AM", checkOutFrom: "01:50 PM", checkOutUntil: "02:30 PM", assigned: 62, iconName: "Sunrise", tone: "amber" },
+  { name: "Day", time: "09:00 AM – 06:00 PM", checkIn: "09:00 AM", checkOut: "06:00 PM", checkInFrom: "08:00 AM", checkInUntil: "09:15 AM", checkOutFrom: "05:45 PM", checkOutUntil: "07:00 PM", assigned: 128, iconName: "Sun", tone: "indigo" },
+  { name: "Evening", time: "02:00 PM – 10:00 PM", checkIn: "02:00 PM", checkOut: "10:00 PM", checkInFrom: "01:50 PM", checkInUntil: "02:15 PM", checkOutFrom: "09:45 PM", checkOutUntil: "10:30 PM", assigned: 34, iconName: "Clock", tone: "rose" },
+  { name: "Night", time: "10:00 PM – 06:00 AM", checkIn: "10:00 PM", checkOut: "06:00 AM", checkInFrom: "09:40 PM", checkInUntil: "10:20 PM", checkOutFrom: "05:45 AM", checkOutUntil: "06:30 AM", assigned: 18, iconName: "Moon", tone: "slate", crossDay: true },
 
 ];
 
@@ -67,12 +67,12 @@ export const syncLogs: DeviceSyncLog[] = [
 ];
 
 export const leaves: LeaveRequest[] = [
-  { name: "Jane Smith", type: "Sick", dates: "Nov 22", days: 1, reason: "Fever and rest advised by doctor.", status: "Pending" },
-  { name: "Marco Chen", type: "Vacation", dates: "Dec 1 – Dec 5", days: 5, reason: "Family trip to Kyoto, booked months ago.", status: "Approved" },
-  { name: "Priya Patel", type: "Casual", dates: "Nov 25", days: 1, reason: "Personal errand at city hall.", status: "Pending" },
-  { name: "Noah Kim", type: "Vacation", dates: "Dec 22 – Dec 30", days: 7, reason: "Winter holiday with family.", status: "Rejected" },
-  { name: "Aisha Bello", type: "Sick", dates: "Nov 21 – Nov 22", days: 2, reason: "Migraine, needs recovery.", status: "Pending" },
-  { name: "Sofia Alvarez", type: "Casual", dates: "Nov 28", days: 1, reason: "Apartment move-in.", status: "Approved" },
+  { name: "Jane Smith", type: "Sick", dates: "26-11-22", days: 1, reason: "Fever and rest advised by doctor.", status: "Pending" },
+  { name: "Marco Chen", type: "Vacation", dates: "26-12-01 - 26-12-05", days: 5, reason: "Family trip to Kyoto, booked months ago.", status: "Approved" },
+  { name: "Priya Patel", type: "Casual", dates: "26-11-25", days: 1, reason: "Personal errand at city hall.", status: "Pending" },
+  { name: "Noah Kim", type: "Vacation", dates: "26-12-22 - 26-12-30", days: 7, reason: "Winter holiday with family.", status: "Rejected" },
+  { name: "Aisha Bello", type: "Sick", dates: "26-11-21 - 26-11-22", days: 2, reason: "Migraine, needs recovery.", status: "Pending" },
+  { name: "Sofia Alvarez", type: "Casual", dates: "26-11-28", days: 1, reason: "Apartment move-in.", status: "Approved" },
 ];
 
 export const payroll: PayrollRecord[] = [

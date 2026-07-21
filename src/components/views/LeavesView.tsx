@@ -56,9 +56,9 @@ export function LeavesView({ searchQuery }: LeavesViewProps) {
       // Search filter
       const matchesSearch = searchQuery
         ? l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          l.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          l.dates.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          l.reason.toLowerCase().includes(searchQuery.toLowerCase())
+        l.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        l.dates.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        l.reason.toLowerCase().includes(searchQuery.toLowerCase())
         : true;
 
       // Tab filter
