@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 import { ViewKey } from "@/types";
 
-export const navItems: { key: ViewKey; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+export const navItems: {
+  key: ViewKey;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { key: "portal", label: "My Portal", icon: UserCircle2 },
   { key: "employees", label: "Employees", icon: Users },

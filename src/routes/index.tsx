@@ -50,23 +50,18 @@ import { toast } from "sonner";
 import { ViewKey } from "@/types";
 
 // Mock Data & Helpers
-import {
-  initialEmployees,
-  initialDepartments,
-  initialShifts,
-  initials,
-} from "@/lib/mockData";
+import { initialEmployees, initialDepartments, initialShifts, initials } from "@/lib/mockData";
 
 // Views
-import { DashboardView } from "@/components/views/DashboardView";
-import { PortalView } from "@/components/views/PortalView";
-import { EmployeesView } from "@/components/views/EmployeesView";
-import { DepartmentsView } from "@/components/views/DepartmentsView";
-import { DevicesView } from "@/components/views/DevicesView";
-import { ShiftsView } from "@/components/views/ShiftsView";
-import { LeavesView } from "@/components/views/LeavesView";
-import { PayrollView } from "@/components/views/PayrollView";
-import { SettingsView } from "@/components/views/SettingsView";
+import { AdminDashboard } from "@/components/views/dashboard";
+import { PortalView } from "@/components/views/portal";
+import { EmployeesView } from "@/components/views/employees";
+import { DepartmentsView } from "@/components/views/departments";
+import { DevicesView } from "@/components/views/devices";
+import { ShiftsView } from "@/components/views/shifts";
+import { LeavesView } from "@/components/views/leaves";
+import { PayrollView } from "@/components/views/payroll";
+import { SettingsView } from "@/components/views/settings";
 import {
   DailyReportView,
   WeeklyReportView,
@@ -86,8 +81,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "KAJS Global — Attendance & Payroll" },
       {
         property: "og:description",
-        content:
-          "Modern attendance and payroll management for growing teams.",
+        content: "Modern attendance and payroll management for growing teams.",
       },
     ],
   }),
@@ -120,35 +114,53 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden">
-      <Sidebar view={view} setView={handleSetView} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-      <div className={cn("transition-all duration-300", isCollapsed ? "md:pl-20" : "md:pl-64")}>
-        <TopHeader
-          view={view}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onAddEmployeeClick={() => {
-            setSelectedEmployee(null);
-            setIsAddEmployeeOpen(true);
-          }}
-          onAddDeptClick={() => {
-            setSelectedDept(null);
-            setIsDeptModalOpen(true);
-          }}
-          onAddShiftClick={() => {
-            setIsShiftModalOpen(true);
-          }}
-          reportDepartmentFilter={reportDepartmentFilter}
-          setReportDepartmentFilter={setReportDepartmentFilter}
-          reportMonth={reportMonth}
-          setReportMonth={setReportMonth}
-          reportYear={reportYear}
-          setReportYear={setReportYear}
-          reportWeek={reportWeek}
-          setReportWeek={setReportWeek}
-        />
-        <main className="p-6 lg:p-8">
-          {view === "dashboard" && <DashboardView searchQuery={searchQuery} />}
+    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden">
+      <Sidebar
+        view={view}
+        setView={handleSetView}
+        isCollapsed={isCollapsed}
+        setIsCollapsed={setIsCollapsed}
+      />
+      <div
+        className={cn(
+          "flex flex-col flex-1 w-full transition-all duration-300",
+          isCollapsed ? "md:pl-20" : "md:pl-64",
+        )}
+      >
+        <div className="shrink-0">
+          <TopHeader
+            view={view}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onAddEmployeeClick={() => {
+              setSelectedEmployee(null);
+              setIsAddEmployeeOpen(true);
+            }}
+            onAddDeptClick={() => {
+              setSelectedDept(null);
+              setIsDeptModalOpen(true);
+            }}
+            onAddShiftClick={() => {
+              setIsShiftModalOpen(true);
+            }}
+            reportDepartmentFilter={reportDepartmentFilter}
+            setReportDepartmentFilter={setReportDepartmentFilter}
+            reportMonth={reportMonth}
+            setReportMonth={setReportMonth}
+            reportYear={reportYear}
+            setReportYear={setReportYear}
+            reportWeek={reportWeek}
+            setReportWeek={setReportWeek}
+          />
+        </div>
+        <main className="flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar relative">
+          {view === "dashboard" && (
+            <AdminDashboard
+              searchQuery={searchQuery}
+              employeesList={employeesList}
+              departmentsList={departmentsList}
+            />
+          )}
           {view === "portal" && <PortalView searchQuery={searchQuery} />}
           {view === "employees" && (
             <EmployeesView
@@ -188,7 +200,7 @@ function App() {
           {view === "payroll" && <PayrollView searchQuery={searchQuery} />}
           {view === "settings" && <SettingsView searchQuery={searchQuery} />}
           {view === "report-daily" && (
-            <DailyReportView 
+            <DailyReportView
               searchQuery={searchQuery}
               departmentFilter={reportDepartmentFilter}
               currentMonth={reportMonth}
@@ -196,7 +208,7 @@ function App() {
             />
           )}
           {view === "report-weekly" && (
-            <WeeklyReportView 
+            <WeeklyReportView
               searchQuery={searchQuery}
               departmentFilter={reportDepartmentFilter}
               currentMonth={reportMonth}
@@ -205,7 +217,7 @@ function App() {
             />
           )}
           {view === "report-15days" && (
-            <FifteenDaysReportView 
+            <FifteenDaysReportView
               searchQuery={searchQuery}
               departmentFilter={reportDepartmentFilter}
               currentMonth={reportMonth}
@@ -213,7 +225,7 @@ function App() {
             />
           )}
           {view === "report-monthly" && (
-            <MonthlyReportView 
+            <MonthlyReportView
               searchQuery={searchQuery}
               departmentFilter={reportDepartmentFilter}
               currentMonth={reportMonth}

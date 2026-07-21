@@ -36,7 +36,9 @@ export function AddEmployeeModal({
               {selectedEmployee ? "Edit Employee Details" : "Add New Employee"}
             </h2>
             <p className="text-xs text-slate-500 mt-0.5 font-medium">
-              {selectedEmployee ? "Modify staff role and linked biometric device settings" : "Register new staff and link biometric device details"}
+              {selectedEmployee
+                ? "Modify staff role and linked biometric device settings"
+                : "Register new staff and link biometric device details"}
             </p>
           </div>
           <Button
@@ -93,8 +95,8 @@ export function AddEmployeeModal({
             if (selectedEmployee) {
               setEmployeesList((prev) =>
                 prev.map((emp) =>
-                  emp.email === selectedEmployee.email ? { ...emp, ...updatedEmp } : emp
-                )
+                  emp.email === selectedEmployee.email ? { ...emp, ...updatedEmp } : emp,
+                ),
               );
               toast.success(`Successfully updated ${name}`);
             } else {
@@ -107,26 +109,50 @@ export function AddEmployeeModal({
         >
           {/* Section 1: Personal Details */}
           <div className="space-y-3">
-            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600/90 border-b border-indigo-50/60 pb-1">Personal Details</div>
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600/90 border-b border-indigo-50/60 pb-1">
+              Personal Details
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Full Name *</label>
-                <Input name="name" defaultValue={selectedEmployee?.name || ""} placeholder="E.g. Alexander Cole" required className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs" />
+                <Input
+                  name="name"
+                  defaultValue={selectedEmployee?.name || ""}
+                  placeholder="E.g. Alexander Cole"
+                  required
+                  className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs"
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Work Email *</label>
-                <Input type="email" name="email" defaultValue={selectedEmployee?.email || ""} placeholder="alex.c@kajs.global" required className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs" />
+                <Input
+                  type="email"
+                  name="email"
+                  defaultValue={selectedEmployee?.email || ""}
+                  placeholder="alex.c@kajs.global"
+                  required
+                  className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs"
+                />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Phone Number</label>
-                <Input name="phone" defaultValue={selectedEmployee?.phone || ""} placeholder="E.g. +977 9801234567" className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs" />
+                <Input
+                  name="phone"
+                  defaultValue={selectedEmployee?.phone || ""}
+                  placeholder="E.g. +977 9801234567"
+                  className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs"
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Gender</label>
-                <select name="gender" defaultValue={selectedEmployee?.gender || "Male"} className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500">
+                <select
+                  name="gender"
+                  defaultValue={selectedEmployee?.gender || "Male"}
+                  className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
+                >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
@@ -134,7 +160,11 @@ export function AddEmployeeModal({
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Blood Group</label>
-                <select name="blood" defaultValue={selectedEmployee?.blood || "A+"} className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500">
+                <select
+                  name="blood"
+                  defaultValue={selectedEmployee?.blood || "A+"}
+                  className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
+                >
                   <option value="A+">A+</option>
                   <option value="A-">A-</option>
                   <option value="B+">B+</option>
@@ -150,7 +180,9 @@ export function AddEmployeeModal({
 
           {/* Section 2: Biometric Device & Work Config */}
           <div className="space-y-3">
-            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600/90 border-b border-indigo-50/60 pb-1">Biometric & Role configuration</div>
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600/90 border-b border-indigo-50/60 pb-1">
+              Biometric & Role configuration
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-indigo-600 flex items-center gap-1">
@@ -174,19 +206,41 @@ export function AddEmployeeModal({
                   Employee ID / Code *
                   <span className="text-[9px] text-slate-400 font-normal">(Auto-Generated)</span>
                 </label>
-                <Input value={formDeviceId ? `KAJS-${formDeviceId}` : ""} readOnly disabled className="h-9 border-slate-200 bg-slate-100/80 focus-visible:ring-0 text-xs font-medium text-slate-500 cursor-not-allowed" />
-                <input type="hidden" name="empId" value={formDeviceId ? `KAJS-${formDeviceId}` : ""} />
+                <Input
+                  value={formDeviceId ? `KAJS-${formDeviceId}` : ""}
+                  readOnly
+                  disabled
+                  className="h-9 border-slate-200 bg-slate-100/80 focus-visible:ring-0 text-xs font-medium text-slate-500 cursor-not-allowed"
+                />
+                <input
+                  type="hidden"
+                  name="empId"
+                  value={formDeviceId ? `KAJS-${formDeviceId}` : ""}
+                />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-semibold text-slate-600">Job Title / Role *</label>
-                <Input name="role" defaultValue={selectedEmployee?.role || ""} placeholder="E.g. Backend Engineer" required className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs" />
+                <label className="text-[11px] font-semibold text-slate-600">
+                  Job Title / Role *
+                </label>
+                <Input
+                  name="role"
+                  defaultValue={selectedEmployee?.role || ""}
+                  placeholder="E.g. Backend Engineer"
+                  required
+                  className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs"
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Department *</label>
-                <select name="dept" defaultValue={selectedEmployee?.dept || "Engineering"} required className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500">
+                <select
+                  name="dept"
+                  defaultValue={selectedEmployee?.dept || "Engineering"}
+                  required
+                  className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
+                >
                   {departmentsList.map((d) => (
                     <option key={d.name} value={d.name}>
                       {d.name}
@@ -196,7 +250,11 @@ export function AddEmployeeModal({
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Shift Type</label>
-                <select name="shift" defaultValue={selectedEmployee?.shift || "Day"} className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500">
+                <select
+                  name="shift"
+                  defaultValue={selectedEmployee?.shift || "Day"}
+                  className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
+                >
                   <option value="Morning">Morning</option>
                   <option value="Day">Day</option>
                   <option value="Evening">Evening</option>
@@ -208,17 +266,34 @@ export function AddEmployeeModal({
 
           {/* Section 3: HR & Payroll config */}
           <div className="space-y-3">
-            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600/90 border-b border-indigo-50/60 pb-1">HR & Payroll Configuration</div>
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600/90 border-b border-indigo-50/60 pb-1">
+              HR & Payroll Configuration
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">PAN / Tax ID</label>
-                <Input name="pan" defaultValue={selectedEmployee?.pan || ""} placeholder="E.g. 609871524" className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs" />
+                <Input
+                  name="pan"
+                  defaultValue={selectedEmployee?.pan || ""}
+                  placeholder="E.g. 609871524"
+                  className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs"
+                />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[11px] font-semibold text-slate-600">Monthly Basic Salary</label>
+                <label className="text-[11px] font-semibold text-slate-600">
+                  Monthly Basic Salary
+                </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400">रु</span>
-                  <Input type="number" name="salary" defaultValue={selectedEmployee?.salary || ""} placeholder="5500" className="h-9 pl-8 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400">
+                    रु
+                  </span>
+                  <Input
+                    type="number"
+                    name="salary"
+                    defaultValue={selectedEmployee?.salary || ""}
+                    placeholder="5500"
+                    className="h-9 pl-8 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs"
+                  />
                 </div>
               </div>
             </div>
@@ -226,14 +301,24 @@ export function AddEmployeeModal({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Status *</label>
-                <select name="status" defaultValue={selectedEmployee?.status || "Active"} className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500">
+                <select
+                  name="status"
+                  defaultValue={selectedEmployee?.status || "Active"}
+                  className="flex h-9 w-full rounded-md border border-slate-200/80 bg-white/50 px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
+                >
                   <option value="Active">Active</option>
                   <option value="On leave">On leave</option>
+                  <option value="Resigned">Resigned</option>
                 </select>
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600">Joined Date</label>
-                <Input type="date" name="joined" defaultValue={selectedEmployee?.joined || ""} className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs text-slate-600" />
+                <Input
+                  type="date"
+                  name="joined"
+                  defaultValue={selectedEmployee?.joined || ""}
+                  className="h-9 border-slate-200/80 bg-white/50 focus-visible:ring-indigo-500 text-xs text-slate-600"
+                />
               </div>
             </div>
           </div>

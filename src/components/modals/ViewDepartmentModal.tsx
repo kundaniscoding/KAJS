@@ -27,7 +27,9 @@ export function ViewDepartmentModal({
               <Building2 className="h-4.5 w-4.5 text-indigo-600" />
               {viewingDept.name} Department
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5 font-medium">Overview & active department roster</p>
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">
+              Overview & active department roster
+            </p>
           </div>
           <Button
             variant="ghost"
@@ -43,30 +45,46 @@ export function ViewDepartmentModal({
           {/* Summary Stats Grid */}
           <div className="grid grid-cols-2 gap-4 bg-indigo-50/20 border border-indigo-100/30 p-4 rounded-xl">
             <div>
-              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Department Head</div>
+              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                Department Head
+              </div>
               <div className="text-sm font-semibold text-slate-800 mt-0.5">{viewingDept.head}</div>
             </div>
             <div>
-              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Annual Budget</div>
-              <div className="text-sm font-semibold text-slate-800 mt-0.5">{viewingDept.budget}</div>
+              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                Annual Budget
+              </div>
+              <div className="text-sm font-semibold text-slate-800 mt-0.5">
+                {viewingDept.budget}
+              </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Total Employees</div>
-              <div className="text-sm font-semibold text-slate-800 mt-0.5">{viewingDept.employees}</div>
+              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                Total Employees
+              </div>
+              <div className="text-sm font-semibold text-slate-800 mt-0.5">
+                {viewingDept.employees}
+              </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Open Vacancies</div>
-              <div className="text-sm font-semibold text-slate-800 mt-0.5">{viewingDept.openRoles} Positions</div>
+              <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                Open Vacancies
+              </div>
+              <div className="text-sm font-semibold text-slate-800 mt-0.5">
+                {viewingDept.openRoles} Positions
+              </div>
             </div>
           </div>
 
           {/* Roster Section */}
           <div className="space-y-2">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Active Roster in {viewingDept.name}</div>
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Active Roster in {viewingDept.name}
+            </div>
             <div className="border border-slate-200/50 rounded-xl overflow-hidden bg-white/40">
               {(() => {
                 const matches = employeesList.filter(
-                  (e) => e.dept.toLowerCase() === viewingDept.name.toLowerCase()
+                  (e) => e.dept.toLowerCase() === viewingDept.name.toLowerCase(),
                 );
                 if (matches.length === 0) {
                   return (
@@ -78,7 +96,10 @@ export function ViewDepartmentModal({
                 return (
                   <div className="divide-y divide-slate-100/60 max-h-56 overflow-y-auto">
                     {matches.map((e) => (
-                      <div key={e.email} className="flex items-center justify-between p-3 hover:bg-slate-50/50 transition-colors">
+                      <div
+                        key={e.email}
+                        className="flex items-center justify-between p-3 hover:bg-slate-50/50 transition-colors"
+                      >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <Avatar className="h-8 w-8">
                             <AvatarFallback className="bg-indigo-50 text-[10px] text-indigo-700 font-bold">
@@ -86,7 +107,9 @@ export function ViewDepartmentModal({
                             </AvatarFallback>
                           </Avatar>
                           <div className="min-w-0">
-                            <div className="text-xs font-semibold text-slate-800 truncate">{e.name}</div>
+                            <div className="text-xs font-semibold text-slate-800 truncate">
+                              {e.name}
+                            </div>
                             <div className="text-[10px] text-slate-400 truncate">{e.role}</div>
                           </div>
                         </div>
@@ -94,7 +117,9 @@ export function ViewDepartmentModal({
                           variant="secondary"
                           className={cn(
                             "border-0 text-[9px] px-1.5 py-0.5 font-semibold shrink-0",
-                            e.status === "Active" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                            e.status === "Active"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-amber-50 text-amber-700",
                           )}
                         >
                           {e.status}

@@ -1,3 +1,4 @@
+import { PortalViewProps } from "./types";
 import { useEffect, useMemo, useState } from "react";
 import { Play, Square, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,10 +14,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-
-interface PortalViewProps {
-  searchQuery: string;
-}
 
 export function PortalView({ searchQuery }: PortalViewProps) {
   const [now, setNow] = useState(new Date());
@@ -51,7 +48,7 @@ export function PortalView({ searchQuery }: PortalViewProps) {
       (p) =>
         p.period.toLowerCase().includes(q) ||
         p.net.toLowerCase().includes(q) ||
-        p.date.toLowerCase().includes(q)
+        p.date.toLowerCase().includes(q),
     );
   }, [searchQuery]);
 
@@ -60,8 +57,7 @@ export function PortalView({ searchQuery }: PortalViewProps) {
   const pct = Math.min(100, (workedHours / required) * 100);
 
   return (
-    <div className="space-y-6">
-
+    <div className="h-full flex flex-col space-y-4 min-h-0">
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="border-slate-200 lg:col-span-2">
           <CardContent className="flex flex-col items-center gap-6 p-10">
@@ -71,7 +67,8 @@ export function PortalView({ searchQuery }: PortalViewProps) {
             </div>
             {clockedIn && inSince && (
               <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
-                Clocked in since {inSince.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+                Clocked in since{" "}
+                {inSince.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
               </Badge>
             )}
             <div className="flex gap-4">
@@ -150,7 +147,11 @@ export function PortalView({ searchQuery }: PortalViewProps) {
                   <TableCell className="text-slate-500">{p.date}</TableCell>
                   <TableCell className="tabular-nums">{p.net}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="text-indigo-600 hover:text-indigo-700">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-indigo-600 hover:text-indigo-700"
+                    >
                       <Download className="h-4 w-4" />
                     </Button>
                   </TableCell>

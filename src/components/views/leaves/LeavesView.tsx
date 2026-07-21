@@ -1,0 +1,295 @@
+import { LeavesViewProps } from "./types";
+import { useMemo, useState, useEffect } from "react";
+import { Check, X } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { leaves, initials } from "@/lib/mockData";
+import { LeaveType, LeaveRequest } from "@/types";
+import { toast } from "sonner";
+import { TableFooterPagination } from "@/components/TableFooterPagination";
+
+type TabType = "All" | "Pending" | "Approved" | "Rejected";
+
+export function LeavesView({ searchQuery }: LeavesViewProps) {
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>(leaves);
+  const [activeTab, setActiveTab] = useState<TabType>("All");
+
+  const leaveTone: Record<LeaveType, string> = {
+    Sick: "bg-red-50 text-red-700 border-red-100",
+    Vacation: "bg-indigo-50 text-indigo-700 border-indigo-100",
+    Casual: "bg-amber-50 text-amber-700 border-amber-100",
+  };
+
+  const statusTone: Record<"Pending" | "Approved" | "Rejected", string> = {
+    Pending: "bg-amber-50 text-amber-700 border-amber-150",
+    Approved: "bg-emerald-50 text-emerald-700 border-emerald-150",
+    Rejected: "bg-rose-50 text-rose-700 border-rose-150",
+  };
+
+  const handleStatusChange = (index: number, name: string, newStatus: "Approved" | "Rejected") => {
+    setLeaveRequests((prev) =>
+      prev.map((req, i) => (i === index ? { ...req, status: newStatus } : req)),
+    );
+    if (newStatus === "Approved") {
+      toast.success(`Leave request for ${name} has been approved.`);
+    } else {
+      toast.error(`Leave request for ${name} has been rejected.`);
+    }
+  };
+
+  // Filter requests based on Search Query & Active Tab
+  const filteredLeaves = useMemo(() => {
+    return leaveRequests.filter((l) => {
+      // Search filter
+      const matchesSearch = searchQuery
+        ? l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          l.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          l.dates.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          l.reason.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
+
+      // Tab filter
+      const matchesTab = activeTab === "All" ? true : l.status === activeTab;
+
+      return matchesSearch && matchesTab;
+    });
+  }, [leaveRequests, searchQuery, activeTab]);
+
+  const stats = useMemo(() => {
+    return {
+      total: leaveRequests.length,
+      pending: leaveRequests.filter((l) => l.status === "Pending").length,
+      approved: leaveRequests.filter((l) => l.status === "Approved").length,
+      rejected: leaveRequests.filter((l) => l.status === "Rejected").length,
+    };
+  }, [leaveRequests]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeTab]);
+
+  const displayedLeaves = useMemo(() => {
+    const start = (currentPage - 1) * 10;
+    return filteredLeaves.slice(start, start + 10);
+  }, [filteredLeaves, currentPage]);
+
+  return (
+    <div className="h-full flex flex-col space-y-4 min-h-0">
+      {/* Stats Counter Section */}
+      <div className="grid gap-3 sm:grid-cols-4 shrink-0">
+        {[
+          {
+            t: "Total Requests",
+            v: stats.total,
+            color: "text-indigo-700 bg-indigo-50",
+            chartColor: "text-indigo-300",
+            tabName: "All",
+          },
+          {
+            t: "Pending Approval",
+            v: stats.pending,
+            color: "text-amber-700 bg-amber-50",
+            chartColor: "text-amber-300",
+            tabName: "Pending",
+          },
+          {
+            t: "Approved Leaves",
+            v: stats.approved,
+            color: "text-emerald-700 bg-emerald-50",
+            chartColor: "text-emerald-300",
+            tabName: "Approved",
+          },
+          {
+            t: "Rejected Leaves",
+            v: stats.rejected,
+            color: "text-rose-700 bg-rose-50",
+            chartColor: "text-rose-300",
+            tabName: "Rejected",
+          },
+        ].map((c) => (
+          <Card
+            key={c.t}
+            onClick={() => setActiveTab(c.tabName as TabType)}
+            className={cn(
+              "border-slate-200/60 bg-white/70 shadow-sm transition-all hover:shadow-md cursor-pointer",
+              activeTab === c.tabName ? "ring-2 ring-indigo-500 shadow-md" : "hover:ring-1 hover:ring-slate-300"
+            )}
+          >
+            <CardContent className="px-3 py-2.5 flex flex-row items-center justify-between">
+              <div className="text-xs font-bold text-slate-600 truncate mr-1">{c.t}</div>
+              <div className="flex-1 flex justify-center mx-2 opacity-70">
+                <svg
+                  className={cn("w-12 h-4", c.chartColor)}
+                  viewBox="0 0 40 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M0 14 L 10 8 L 20 10 L 30 4 L 40 2" />
+                </svg>
+              </div>
+              <div
+                className={cn(
+                  "text-sm font-black rounded-md px-1.5 py-0.5 whitespace-nowrap",
+                  c.color,
+                )}
+              >
+                {c.v}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+
+
+      {/* Table Card */}
+      <Card className="border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+        <CardContent className="p-0 flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-auto custom-scrollbar">
+            <Table>
+              <TableHeader className="sticky top-0 z-10 bg-white shadow-sm">
+                <TableRow>
+                  <TableHead className="pl-5">Employee</TableHead>
+                  <TableHead>Leave Type</TableHead>
+                  <TableHead>Dates</TableHead>
+                  <TableHead className="text-center">
+                    Duration
+                  </TableHead>
+                  <TableHead className="max-w-[280px]">
+                    Reason
+                  </TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right pr-5">
+                    Actions
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {displayedLeaves.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="py-8 text-center text-xs text-slate-400 font-medium"
+                    >
+                      No leave requests found matching the current search & filters.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  displayedLeaves.map((l) => {
+                    const originalIndex = leaveRequests.findIndex(
+                      (r) => r.name === l.name && r.dates === l.dates && r.reason === l.reason,
+                    );
+
+                    return (
+                      <TableRow
+                        key={`${l.name}-${l.dates}`}
+                        className="hover:bg-indigo-50/10 transition-colors border-b border-slate-100/60 last:border-0 group"
+                      >
+                        <TableCell className="pl-5">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8 ring-2 ring-indigo-50/20">
+                              <AvatarFallback className="bg-indigo-50 text-[10px] text-indigo-700 font-bold">
+                                {initials(l.name)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="text-xs font-semibold text-slate-800">{l.name}</div>
+                              <div className="text-[9px] text-slate-400 font-medium">
+                                Requested 2h ago
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="secondary"
+                            className={cn(
+                              "border font-bold text-[9px] px-2 py-0.5",
+                              leaveTone[l.type],
+                            )}
+                          >
+                            {l.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-slate-600 font-semibold">
+                          {l.dates}
+                        </TableCell>
+                        <TableCell className="text-xs text-center font-bold text-slate-700">
+                          {l.days} day{l.days > 1 ? "s" : ""}
+                        </TableCell>
+                        <TableCell
+                          className="py-3.5 text-xs text-slate-500 font-medium truncate max-w-[280px]"
+                          title={l.reason}
+                        >
+                          {l.reason}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="secondary"
+                            className={cn(
+                              "border font-bold text-[9px] px-2 py-0.5 uppercase tracking-wide",
+                              statusTone[l.status],
+                            )}
+                          >
+                            {l.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right pr-5">
+                          {l.status === "Pending" ? (
+                            <div className="flex justify-end gap-1.5">
+                              <Button
+                                size="sm"
+                                className="h-7 px-2.5 bg-emerald-600 hover:bg-emerald-700 text-[10px] font-semibold gap-1 text-white shadow-sm"
+                                onClick={() => handleStatusChange(originalIndex, l.name, "Approved")}
+                              >
+                                <Check className="h-3 w-3" /> Approve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 px-2.5 border-rose-200 text-rose-700 hover:bg-rose-55 text-[10px] font-semibold gap-1"
+                                onClick={() => handleStatusChange(originalIndex, l.name, "Rejected")}
+                              >
+                                <X className="h-3 w-3" /> Reject
+                              </Button>
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                              Archived
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <TableFooterPagination
+            total={filteredLeaves.length}
+            shown={displayedLeaves.length}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

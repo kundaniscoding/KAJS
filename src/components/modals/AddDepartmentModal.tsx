@@ -25,7 +25,9 @@ export function AddDepartmentModal({
               {selectedDept ? "Edit Department" : "Add New Department"}
             </h2>
             <p className="text-xs text-slate-500 mt-0.5 font-medium">
-              {selectedDept ? "Modify team head, budget, and open vacancies" : "Create a new organizational team card"}
+              {selectedDept
+                ? "Modify team head, budget, and open vacancies"
+                : "Create a new organizational team card"}
             </p>
           </div>
           <Button
@@ -70,7 +72,7 @@ export function AddDepartmentModal({
 
             if (selectedDept) {
               setDepartmentsList((prev) =>
-                prev.map((d) => (d.name === selectedDept.name ? updatedDept : d))
+                prev.map((d) => (d.name === selectedDept.name ? updatedDept : d)),
               );
               toast.success(`Successfully updated department ${name}`);
             } else {
@@ -83,12 +85,24 @@ export function AddDepartmentModal({
         >
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-slate-600">Department Name *</label>
-            <Input name="name" defaultValue={selectedDept?.name || ""} placeholder="E.g. Engineering" required className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs" />
+            <Input
+              name="name"
+              defaultValue={selectedDept?.name || ""}
+              placeholder="E.g. Engineering"
+              required
+              className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs"
+            />
           </div>
 
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-slate-600">Department Head *</label>
-            <Input name="head" defaultValue={selectedDept?.head || ""} placeholder="E.g. Marco Chen" required className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs" />
+            <Input
+              name="head"
+              defaultValue={selectedDept?.head || ""}
+              placeholder="E.g. Marco Chen"
+              required
+              className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -98,11 +112,22 @@ export function AddDepartmentModal({
                 <span className="text-[9px] text-slate-400 font-normal">(Auto-calculated)</span>
               </label>
               <input type="hidden" name="employees" value={selectedDept?.employees || "0"} />
-              <Input type="number" value={selectedDept?.employees || "0"} disabled className="h-9 bg-slate-50/50 border-slate-200 text-slate-400 text-xs cursor-not-allowed" />
+              <Input
+                type="number"
+                value={selectedDept?.employees || "0"}
+                disabled
+                className="h-9 bg-slate-50/50 border-slate-200 text-slate-400 text-xs cursor-not-allowed"
+              />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-semibold text-slate-600">Open Vacancies</label>
-              <Input type="number" name="openRoles" defaultValue={selectedDept?.openRoles || "0"} placeholder="0" className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs" />
+              <Input
+                type="number"
+                name="openRoles"
+                defaultValue={selectedDept?.openRoles || "0"}
+                placeholder="0"
+                className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs"
+              />
             </div>
           </div>
 
@@ -110,13 +135,25 @@ export function AddDepartmentModal({
             <div className="space-y-1.5">
               <label className="text-[11px] font-semibold text-slate-600">Annual Budget *</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400">रु</span>
-                <Input name="budget" defaultValue={selectedDept?.budget?.replace("रु", "").trim() || ""} placeholder="1.24M" required className="h-9 pl-8 border-slate-200 focus-visible:ring-indigo-500 text-xs" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400">
+                  रु
+                </span>
+                <Input
+                  name="budget"
+                  defaultValue={selectedDept?.budget?.replace("रु", "").trim() || ""}
+                  placeholder="1.24M"
+                  required
+                  className="h-9 pl-8 border-slate-200 focus-visible:ring-indigo-500 text-xs"
+                />
               </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-semibold text-slate-600">Color Tone</label>
-              <select name="tone" defaultValue={selectedDept?.tone || "indigo"} className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500">
+              <select
+                name="tone"
+                defaultValue={selectedDept?.tone || "indigo"}
+                className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
+              >
                 <option value="indigo">Indigo</option>
                 <option value="emerald">Emerald</option>
                 <option value="amber">Amber</option>

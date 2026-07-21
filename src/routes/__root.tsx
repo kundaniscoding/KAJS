@@ -79,9 +79,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "KAJS Global — Attendance & Payroll" },
-      { name: "description", content: "Modern attendance and payroll management for growing teams." },
+      {
+        name: "description",
+        content: "Modern attendance and payroll management for growing teams.",
+      },
       { property: "og:title", content: "KAJS Global — Attendance & Payroll" },
-      { property: "og:description", content: "Modern attendance and payroll management for growing teams." },
+      {
+        property: "og:description",
+        content: "Modern attendance and payroll management for growing teams.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
