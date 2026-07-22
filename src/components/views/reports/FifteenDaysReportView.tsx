@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -174,73 +175,70 @@ export function FifteenDaysReportView({
         ))}
       </div>
 
-      <Card className="border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
-        <CardContent className="p-0 flex-1 overflow-auto custom-scrollbar">
-          <Table>
-            <TableHeader className="sticky top-0 z-10 bg-white shadow-sm">
-              <TableRow>
-                <TableHead>Employee</TableHead>
-                <TableHead className="text-center">
-                  Hours Worked
-                </TableHead>
-                <TableHead className="text-center">
-                  Base Allowance
-                </TableHead>
-                <TableHead className="text-center">
-                  Overtime Pay
-                </TableHead>
-                <TableHead className="text-center">
-                  Deductions
-                </TableHead>
-                <TableHead className="text-center">
-                  Net Payout
-                </TableHead>
-                <TableHead className="text-right">
-                  Status
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredLogs.map((l) => (
-                <TableRow
-                  key={l.name}
-                  className="hover:bg-indigo-50/10 transition-colors border-b border-slate-100/60 last:border-0"
-                >
-                  <TableCell className="font-semibold text-slate-800">{l.name}</TableCell>
-                  <TableCell className="text-xs text-center font-bold text-slate-700 tabular-nums">
-                    {l.hoursLogged} hrs
-                  </TableCell>
-                  <TableCell className="text-xs text-center tabular-nums font-semibold text-slate-700">
-                    {l.basePay}
-                  </TableCell>
-                  <TableCell className="text-xs text-center tabular-nums font-semibold text-emerald-600">
-                    {l.overtime}
-                  </TableCell>
-                  <TableCell className="text-xs text-center tabular-nums font-semibold text-rose-500">
-                    {l.deduction}
-                  </TableCell>
-                  <TableCell className="text-xs text-center tabular-nums font-bold text-slate-800">
-                    {l.net}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "border-0 text-[10px] px-2 py-0.5 font-semibold",
-                        l.status === "Paid"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-amber-50 text-amber-700",
-                      )}
-                    >
-                      {l.status}
-                    </Badge>
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-2xl border border-white/60 bg-white/60 shadow-sm shadow-slate-200/50 backdrop-blur-xl">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pl-6">Employee</TableHead>
+              <TableHead className="text-center">Hours Worked</TableHead>
+              <TableHead className="text-center">Base Allowance</TableHead>
+              <TableHead className="text-center">Overtime Pay</TableHead>
+              <TableHead className="text-center">Deductions</TableHead>
+              <TableHead className="text-center">Net Payout</TableHead>
+              <TableHead className="pr-6 text-right">Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+              {filteredLogs.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="py-10 text-center text-slate-400">
+                    No data found.
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              ) : (
+                filteredLogs.map((l) => (
+                  <TableRow key={l.name}>
+                    <TableCell className="pl-6 pr-4 text-slate-800">{l.name}</TableCell>
+                    <TableCell className="text-center text-slate-700 tabular-nums">
+                      {l.hoursLogged} hrs
+                    </TableCell>
+                    <TableCell className="text-center tabular-nums text-slate-700">
+                      {l.basePay}
+                    </TableCell>
+                    <TableCell className="text-center tabular-nums text-emerald-600">
+                      {l.overtime}
+                    </TableCell>
+                    <TableCell className="text-center tabular-nums text-rose-500">
+                      {l.deduction}
+                    </TableCell>
+                    <TableCell className="text-center tabular-nums text-slate-800">
+                      {l.net}
+                    </TableCell>
+                    <TableCell className="pl-4 pr-6 text-right">
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "border-0 px-2 py-0.5 shadow-sm/5 inline-flex items-center gap-1.5",
+                          l.status === "Paid"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-amber-50 text-amber-700",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full animate-pulse",
+                            l.status === "Paid" ? "bg-emerald-500" : "bg-amber-500",
+                          )}
+                        />
+                        {l.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

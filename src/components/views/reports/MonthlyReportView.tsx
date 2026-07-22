@@ -209,54 +209,54 @@ export function MonthlyReportView({
       {/* Monthly Attendance Matrix */}
       <Card className="border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm overflow-hidden w-full">
         <CardContent className="p-0 overflow-x-auto scrollbar-hide">
-          <table className="w-full text-xs text-left min-w-max">
-            <thead>
-              <tr className="bg-slate-50/40 border-b border-slate-100/60">
-                <th className="py-3 px-2 text-center font-bold text-slate-700 sticky left-0 bg-slate-50/90 z-20 w-[60px]">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-slate-50/40 border-b border-slate-100/60">
+                <TableHead className="py-3 px-2 text-center text-slate-700 sticky left-0 bg-slate-50/90 z-20 w-[60px] uppercase-none tracking-normal">
                   Code
-                </th>
-                <th className="py-3 px-4 font-bold text-slate-700 sticky left-[60px] bg-slate-50/90 z-20 w-[200px] whitespace-nowrap shadow-[4px_0_6px_-2px_rgba(0,0,0,0.05)]">
+                </TableHead>
+                <TableHead className="py-3 px-4 text-slate-700 sticky left-[60px] bg-slate-50/90 z-20 w-[200px] whitespace-nowrap shadow-[4px_0_6px_-2px_rgba(0,0,0,0.05)] uppercase-none tracking-normal">
                   Employee Name
-                </th>
+                </TableHead>
                 {daysInMonth.map((d) => (
-                  <th
+                  <TableHead
                     key={d.date}
-                    className="py-2 px-1 text-center font-semibold text-slate-600 min-w-[44px] w-[44px]"
+                    className="py-2 px-1 text-center font-semibold text-slate-600 min-w-[44px] w-[44px] uppercase-none tracking-normal"
                   >
                     <div className="text-[11px] font-bold text-slate-800">{d.date}</div>
                     <div className="text-[9px] text-slate-400 mt-0.5">{d.day}</div>
-                  </th>
+                  </TableHead>
                 ))}
-                <th className="py-3 px-1 font-bold text-slate-700 text-center sticky right-[150px] bg-slate-50/90 z-20 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] w-[60px]">
+                <TableHead className="py-3 px-1 text-slate-700 text-center sticky right-[150px] bg-slate-50/90 z-20 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] w-[60px] uppercase-none tracking-normal">
                   Present
-                </th>
-                <th className="py-3 px-1 font-bold text-slate-700 text-center sticky right-[100px] bg-slate-50/90 z-20 w-[50px]">
+                </TableHead>
+                <TableHead className="py-3 px-1 text-slate-700 text-center sticky right-[100px] bg-slate-50/90 z-20 w-[50px] uppercase-none tracking-normal">
                   Absent
-                </th>
-                <th className="py-3 px-1 font-bold text-slate-700 text-center sticky right-[60px] bg-slate-50/90 z-20 w-[40px]">
+                </TableHead>
+                <TableHead className="py-3 px-1 text-slate-700 text-center sticky right-[60px] bg-slate-50/90 z-20 w-[40px] uppercase-none tracking-normal">
                   OT
-                </th>
-                <th className="py-3 px-1 font-bold text-slate-700 text-center sticky right-0 bg-slate-50/90 z-20 w-[60px]">
+                </TableHead>
+                <TableHead className="py-3 px-1 text-slate-700 text-center sticky right-0 bg-slate-50/90 z-20 w-[60px] uppercase-none tracking-normal">
                   Total Days
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {paginatedMatrix.map((row) => (
-                <tr
+                <TableRow
                   key={row.code}
                   className="border-b border-slate-100/60 last:border-0 hover:bg-slate-50/30"
                 >
-                  <td className="py-2.5 px-2 text-center font-bold text-slate-800 sticky left-0 bg-white/95 z-10 w-[60px]">
+                  <TableCell className="py-2.5 px-2 text-center text-slate-800 sticky left-0 bg-white/95 z-10 w-[60px]">
                     {row.code}
-                  </td>
-                  <td className="py-2.5 px-4 sticky left-[60px] bg-white/95 z-10 w-[200px] whitespace-nowrap shadow-[4px_0_6px_-2px_rgba(0,0,0,0.02)]">
-                    <div className="font-bold text-slate-800 text-xs truncate">{row.name}</div>
-                  </td>
+                  </TableCell>
+                  <TableCell className="py-2.5 px-4 sticky left-[60px] bg-white/95 z-10 w-[200px] whitespace-nowrap shadow-[4px_0_6px_-2px_rgba(0,0,0,0.02)]">
+                    <div className="text-slate-800 truncate">{row.name}</div>
+                  </TableCell>
                   {daysInMonth.map((d, i) => {
                     const status = row.attendance[(i + 1) as keyof typeof row.attendance] || "-";
                     return (
-                      <td key={d.date} className="py-2.5 px-1 text-center min-w-[44px] w-[44px]">
+                      <TableCell key={d.date} className="py-2.5 px-1 text-center min-w-[44px] w-[44px]">
                         {status === "P" && (
                           <button
                             onClick={() => {
@@ -294,25 +294,25 @@ export function MonthlyReportView({
                           </button>
                         )}
                         {status === "-" && <span className="text-slate-300 font-medium">-</span>}
-                      </td>
+                      </TableCell>
                     );
                   })}
-                  <td className="py-2.5 px-1 font-bold text-emerald-700 text-center sticky right-[150px] bg-white/95 z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.02)]">
+                  <TableCell className="py-2.5 px-1 text-emerald-700 text-center sticky right-[150px] bg-white/95 z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.02)]">
                     {row.present}
-                  </td>
-                  <td className="py-2.5 px-1 font-bold text-rose-600 text-center sticky right-[100px] bg-white/95 z-10">
+                  </TableCell>
+                  <TableCell className="py-2.5 px-1 text-rose-600 text-center sticky right-[100px] bg-white/95 z-10">
                     {row.absent}
-                  </td>
-                  <td className="py-2.5 px-1 font-bold text-blue-600 text-center sticky right-[60px] bg-white/95 z-10">
+                  </TableCell>
+                  <TableCell className="py-2.5 px-1 text-blue-600 text-center sticky right-[60px] bg-white/95 z-10">
                     {row.extra}
-                  </td>
-                  <td className="py-2.5 px-1 font-black text-slate-800 text-center sticky right-0 bg-white/95 z-10">
+                  </TableCell>
+                  <TableCell className="py-2.5 px-1 text-slate-800 text-center sticky right-0 bg-white/95 z-10">
                     {row.total}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
 
         {true && (

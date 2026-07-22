@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { cn } from "@/lib/utils";
 import { leaves, initials } from "@/lib/mockData";
 import { LeaveType, LeaveRequest } from "@/types";
@@ -159,137 +160,133 @@ export function LeavesView({ searchQuery }: LeavesViewProps) {
 
 
       {/* Table Card */}
-      <Card className="border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
-        <CardContent className="p-0 flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex-1 overflow-auto custom-scrollbar">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-white shadow-sm">
+      {/* Table Card */}
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-2xl border border-white/60 bg-white/60 shadow-sm shadow-slate-200/50 backdrop-blur-xl">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pl-6">Employee</TableHead>
+              <TableHead>Leave Type</TableHead>
+              <TableHead>Dates</TableHead>
+              <TableHead className="text-center">Duration</TableHead>
+              <TableHead>Reason</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="pr-6 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+              {displayedLeaves.length === 0 ? (
                 <TableRow>
-                  <TableHead className="pl-5">Employee</TableHead>
-                  <TableHead>Leave Type</TableHead>
-                  <TableHead>Dates</TableHead>
-                  <TableHead className="text-center">
-                    Duration
-                  </TableHead>
-                  <TableHead className="max-w-[280px]">
-                    Reason
-                  </TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right pr-5">
-                    Actions
-                  </TableHead>
+                  <TableCell
+                    colSpan={7}
+                    className="py-10 text-center text-slate-400"
+                  >
+                    No leave requests found matching the current search & filters.
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {displayedLeaves.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="py-8 text-center text-xs text-slate-400 font-medium"
-                    >
-                      No leave requests found matching the current search & filters.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  displayedLeaves.map((l) => {
-                    const originalIndex = leaveRequests.findIndex(
-                      (r) => r.name === l.name && r.dates === l.dates && r.reason === l.reason,
-                    );
+              ) : (
+                displayedLeaves.map((l) => {
+                  const originalIndex = leaveRequests.findIndex(
+                    (r) => r.name === l.name && r.dates === l.dates && r.reason === l.reason,
+                  );
 
-                    return (
-                      <TableRow
-                        key={`${l.name}-${l.dates}`}
-                        className="hover:bg-indigo-50/10 transition-colors border-b border-slate-100/60 last:border-0 group"
-                      >
-                        <TableCell className="pl-5">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8 ring-2 ring-indigo-50/20">
-                              <AvatarFallback className="bg-indigo-50 text-[10px] text-indigo-700 font-bold">
-                                {initials(l.name)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <div className="text-xs font-semibold text-slate-800">{l.name}</div>
-                              <div className="text-[9px] text-slate-400 font-medium">
-                                Requested 2h ago
-                              </div>
+                  return (
+                    <TableRow key={`${l.name}-${l.dates}`}>
+                      <TableCell className="pl-6">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9 ring-2 ring-indigo-50/20 group-hover:ring-indigo-100 transition-all duration-300">
+                            <AvatarFallback className="bg-indigo-50 text-[10px] text-indigo-700 font-bold">
+                              {initials(l.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="text-slate-800 leading-tight group-hover:text-indigo-600 transition-colors duration-200">{l.name}</div>
+                            <div className="text-slate-400 mt-0.5">
+                              Requested 2h ago
                             </div>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="secondary"
-                            className={cn(
-                              "border font-bold text-[9px] px-2 py-0.5",
-                              leaveTone[l.type],
-                            )}
-                          >
-                            {l.type}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-xs text-slate-600 font-semibold">
-                          {l.dates}
-                        </TableCell>
-                        <TableCell className="text-xs text-center font-bold text-slate-700">
-                          {l.days} day{l.days > 1 ? "s" : ""}
-                        </TableCell>
-                        <TableCell
-                          className="py-3.5 text-xs text-slate-500 font-medium truncate max-w-[280px]"
-                          title={l.reason}
-                        >
-                          {l.reason}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="secondary"
-                            className={cn(
-                              "border font-bold text-[9px] px-2 py-0.5 uppercase tracking-wide",
-                              statusTone[l.status],
-                            )}
-                          >
-                            {l.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right pr-5">
-                          {l.status === "Pending" ? (
-                            <div className="flex justify-end gap-1.5">
-                              <Button
-                                size="sm"
-                                className="h-7 px-2.5 bg-emerald-600 hover:bg-emerald-700 text-[10px] font-semibold gap-1 text-white shadow-sm"
-                                onClick={() => handleStatusChange(originalIndex, l.name, "Approved")}
-                              >
-                                <Check className="h-3 w-3" /> Approve
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-7 px-2.5 border-rose-200 text-rose-700 hover:bg-rose-55 text-[10px] font-semibold gap-1"
-                                onClick={() => handleStatusChange(originalIndex, l.name, "Rejected")}
-                              >
-                                <X className="h-3 w-3" /> Reject
-                              </Button>
-                            </div>
-                          ) : (
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                              Archived
-                            </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "border px-2 py-0.5",
+                            leaveTone[l.type],
                           )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                        >
+                          {l.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {l.dates}
+                      </TableCell>
+                      <TableCell className="text-center text-slate-700">
+                        {l.days} day{l.days > 1 ? "s" : ""}
+                      </TableCell>
+                      <TableCell
+                        className="text-slate-500 truncate max-w-[280px]"
+                        title={l.reason}
+                      >
+                        {l.reason}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "border px-2 py-0.5 shadow-sm/5 inline-flex items-center gap-1.5",
+                            statusTone[l.status],
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "h-1.5 w-1.5 rounded-full animate-pulse",
+                              l.status === "Approved" ? "bg-emerald-500" : l.status === "Rejected" ? "bg-rose-500" : "bg-amber-500",
+                            )}
+                          />
+                          {l.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="pr-6 text-right">
+                        {l.status === "Pending" ? (
+                          <div className="flex justify-end gap-1.5">
+                            <Button
+                              size="sm"
+                              className="h-7 px-2.5 bg-emerald-600 hover:bg-emerald-700 gap-1 text-white shadow-sm"
+                              onClick={() => handleStatusChange(originalIndex, l.name, "Approved")}
+                            >
+                              <Check className="h-3 w-3" /> Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2.5 border-rose-200 text-rose-700 hover:bg-rose-55 gap-1"
+                              onClick={() => handleStatusChange(originalIndex, l.name, "Rejected")}
+                            >
+                              <X className="h-3 w-3" /> Reject
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 uppercase tracking-wider">
+                            Archived
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+          </TableBody>
+        </Table>
+        <div className="border-t border-slate-100/60 bg-white/40">
           <TableFooterPagination
             total={filteredLeaves.length}
             shown={displayedLeaves.length}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

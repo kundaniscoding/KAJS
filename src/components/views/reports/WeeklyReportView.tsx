@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -158,49 +159,52 @@ export function WeeklyReportView({
         ))}
       </div>
 
-      <Card className="border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm overflow-hidden w-full">
-        <CardContent className="p-0 overflow-x-auto scrollbar-hide">
-          <table className="w-full text-xs text-left min-w-max">
-            <thead>
-              <tr className="bg-slate-50/40 border-b border-slate-100/60">
-                <th className="py-3 px-4 font-bold text-slate-700 w-[80px]">Code</th>
-                <th className="py-3 px-4 font-bold text-slate-700 w-[200px]">Employee</th>
-                <th className="py-3 px-4 font-bold text-slate-700">Department</th>
-                <th className="py-3 px-4 font-bold text-slate-700 text-center">Worked Days</th>
-                <th className="py-3 px-4 font-bold text-slate-700 text-center">Present Days</th>
-                <th className="py-3 px-4 font-bold text-slate-700 text-center">Half Days</th>
-                <th className="py-3 px-4 font-bold text-slate-700 text-right">Worked Hours</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredWeeklyData.map((row) => (
-                <tr
-                  key={row.code}
-                  className="border-b border-slate-100/60 last:border-0 hover:bg-slate-50/30"
-                >
-                  <td className="py-3 px-4 font-bold text-slate-800">{row.code}</td>
-                  <td className="py-3 px-4">
-                    <div className="font-bold text-slate-800 text-xs">{row.name}</div>
-                  </td>
-                  <td className="py-3 px-4 text-slate-600 font-medium">{row.dept}</td>
-                  <td className="py-3 px-4 text-center font-bold tabular-nums text-slate-700">
-                    {row.workedDays}
-                  </td>
-                  <td className="py-3 px-4 text-center font-bold tabular-nums text-slate-700">
-                    {row.presentDays}
-                  </td>
-                  <td className="py-3 px-4 text-center font-bold tabular-nums text-slate-700">
-                    {row.halfDays}
-                  </td>
-                  <td className="py-3 px-4 text-right font-black tabular-nums text-emerald-600">
-                    {row.workedHours} hrs
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-2xl border border-white/60 bg-white/60 shadow-sm shadow-slate-200/50 backdrop-blur-xl">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pl-6">Code</TableHead>
+              <TableHead>Employee</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead className="text-center">Worked Days</TableHead>
+              <TableHead className="text-center">Present Days</TableHead>
+              <TableHead className="text-center">Half Days</TableHead>
+              <TableHead className="pr-6 text-right">Worked Hours</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+              {filteredWeeklyData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="py-10 text-center text-slate-400">
+                    No data found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredWeeklyData.map((row) => (
+                  <TableRow key={row.code}>
+                    <TableCell className="pl-6 pr-4 text-slate-800">{row.code}</TableCell>
+                    <TableCell>
+                      <div className="text-slate-800">{row.name}</div>
+                    </TableCell>
+                    <TableCell className="text-slate-600">{row.dept}</TableCell>
+                    <TableCell className="text-center tabular-nums text-slate-700">
+                      {row.workedDays}
+                    </TableCell>
+                    <TableCell className="text-center tabular-nums text-slate-700">
+                      {row.presentDays}
+                    </TableCell>
+                    <TableCell className="text-center tabular-nums text-slate-700">
+                      {row.halfDays}
+                    </TableCell>
+                    <TableCell className="pl-4 pr-6 text-right tabular-nums text-emerald-600">
+                      {row.workedHours} hrs
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

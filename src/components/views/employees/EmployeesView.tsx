@@ -59,7 +59,7 @@ export function EmployeesView({
   }, [employeesList]);
 
   return (
-    <div className="h-full flex flex-col space-y-4 min-h-0">
+    <div className="h-full flex flex-col space-y-5 min-h-0">
       <div className="grid gap-3 sm:grid-cols-4 shrink-0">
         {[
           {
@@ -118,30 +118,31 @@ export function EmployeesView({
           </Card>
         ))}
       </div>
-      <Card className="border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
-        <CardContent className="p-0 flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex-1 overflow-auto custom-scrollbar">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-white shadow-sm">
+
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-2xl border border-white/60 bg-white/60 shadow-sm shadow-slate-200/50 backdrop-blur-xl">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pl-6">Employee ID</TableHead>
+              <TableHead>Employee Name</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Shift</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="pr-6 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+              {displayedEmployees.length === 0 ? (
                 <TableRow>
-                  <TableHead>Employee ID</TableHead>
-                  <TableHead>Employee Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Shift</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">
-                    Actions
-                  </TableHead>
+                  <TableCell colSpan={7} className="py-10 text-center text-slate-400">
+                    No employees match your search.
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {displayedEmployees.map((e) => (
-                  <TableRow
-                    key={e.email}
-                    className="hover:bg-indigo-50/20 transition-colors border-b border-slate-100/65 last:border-0 group"
-                  >
-                    <TableCell className="text-xs font-mono font-bold text-slate-500">
+              ) : (
+                displayedEmployees.map((e) => (
+                  <TableRow key={e.email}>
+                    <TableCell className="pl-6 font-mono text-slate-500">
                       {e.empId || "—"}
                     </TableCell>
                     <TableCell>
@@ -152,23 +153,23 @@ export function EmployeesView({
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors duration-200">
+                          <div className="text-slate-800 leading-tight group-hover:text-indigo-600 transition-colors duration-200">
                             {e.name}
                           </div>
-                          <div className="text-xs text-slate-400 font-medium">{e.email}</div>
+                          <div className="text-slate-400 mt-0.5">{e.email}</div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm font-medium text-slate-700">
+                    <TableCell className="text-slate-700">
                       {e.role}
                     </TableCell>
-                    <TableCell className="text-sm font-medium text-slate-500">
+                    <TableCell className="text-slate-500">
                       {e.dept}
                     </TableCell>
-                    <TableCell className="text-xs font-semibold text-slate-600">
+                    <TableCell className="text-slate-600">
                       <Badge
                         variant="secondary"
-                        className="bg-slate-100/60 border-slate-200/40 text-slate-600 font-bold px-2 py-0.5"
+                        className="bg-slate-100/60 border-slate-200/40 text-slate-600 px-2 py-0.5"
                       >
                         {e.shift || "Day"}
                       </Badge>
@@ -177,7 +178,7 @@ export function EmployeesView({
                       <Badge
                         variant="secondary"
                         className={cn(
-                          "border-0 inline-flex items-center font-semibold text-[10px] px-2 py-0.5 shadow-sm/5",
+                          "border-0 inline-flex items-center px-2 py-0.5 shadow-sm/5",
                           e.status.toLowerCase() === "active"
                             ? "bg-emerald-50 text-emerald-700"
                             : e.status.toLowerCase() === "resigned"
@@ -198,30 +199,31 @@ export function EmployeesView({
                         {e.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="pr-6 text-right">
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="h-8 hover:bg-indigo-600 hover:text-white border-slate-200 transition-all duration-200 shadow-sm/5 gap-1.5"
+                        className="h-7 px-3 rounded-lg text-slate-500 hover:bg-white hover:text-indigo-600 hover:shadow-sm transition-all gap-1"
                         onClick={() => onEditEmployeeClick(e)}
                       >
-                        <Edit className="h-3.5 w-3.5" />
+                        <Edit className="h-3 w-3" />
                         Edit
                       </Button>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              )}
+          </TableBody>
+        </Table>
+        <div className="border-t border-slate-100/60 bg-white/40">
           <TableFooterPagination
             total={filteredEmployees.length}
             shown={displayedEmployees.length}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

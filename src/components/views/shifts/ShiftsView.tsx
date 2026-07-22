@@ -1,5 +1,5 @@
 import { ShiftsViewProps } from "./types";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Sunrise,
   Sun,
@@ -16,6 +16,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { TableFooterPagination } from "@/components/TableFooterPagination";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -73,8 +82,6 @@ function to12(t: string): string {
 export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsViewProps) {
   const [editingShift, setEditingShift] = useState<any | null>(null);
 
-  const capacityMap: Record<string, number> = { Morning: 100, Day: 150, Evening: 80, Night: 50 };
-
   const filteredShifts = useMemo(() => {
     if (!searchQuery) return shiftsList;
     const q = searchQuery.toLowerCase();
@@ -82,6 +89,17 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
       (s) => s.name.toLowerCase().includes(q) || s.time.toLowerCase().includes(q),
     );
   }, [searchQuery, shiftsList]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  const displayedShifts = useMemo(() => {
+    const start = (currentPage - 1) * 10;
+    return filteredShifts.slice(start, start + 10);
+  }, [filteredShifts, currentPage]);
 
   const totalEmployees = 242;
   const totalShifts = shiftsList.length;
@@ -190,120 +208,103 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
 
       {/* ── Shift Definitions Table ── */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-2xl border border-white/60 bg-white/60 shadow-sm shadow-slate-200/50 backdrop-blur-xl">
-        <div className="flex-1 overflow-auto custom-scrollbar">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b border-slate-100/60 bg-slate-50/40 sticky top-0 z-10 backdrop-blur-sm">
-                {[
-                  "Shift",
-                  "Hours",
-                  "Check-In Window",
-                  "Check-Out Window",
-                  "Assigned",
-                  "Coverage",
-                  "",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="py-3 px-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider first:pl-6 last:pr-6 last:text-right"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pl-6">Name</TableHead>
+              <TableHead>Code</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Check In</TableHead>
+              <TableHead>Check Out</TableHead>
+              <TableHead className="text-center">Capacity</TableHead>
+              <TableHead className="text-center">Assigned</TableHead>
+              <TableHead>Coverage</TableHead>
+              <TableHead className="pr-6 text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
               {filteredShifts.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-10 text-center text-xs text-slate-400 font-medium">
+                <TableRow>
+                  <TableCell colSpan={7} className="py-10 text-center text-slate-400">
                     No shifts match your search.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
-                filteredShifts.map((s) => {
+                displayedShifts.map((s) => {
                   const Icon = ICON_MAP[s.iconName] || Sun;
-                  const capacity = capacityMap[s.name] || 100;
+                  const capacity = s.capacity || 100;
                   const pct = Math.min(100, Math.round((s.assigned / capacity) * 100));
 
                   return (
-                    <tr
-                      key={s.name}
-                      className="border-b border-slate-100/40 last:border-0 hover:bg-slate-50/50 transition-colors group"
-                    >
-                      {/* Shift icon + name */}
-                      <td className="py-4 pl-6 pr-4">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={cn(
-                              "grid h-9 w-9 shrink-0 place-items-center rounded-xl shadow-sm",
-                              TONE_ICON[s.tone] || TONE_ICON.slate,
-                            )}
-                          >
-                            <Icon className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-800 text-[13px] leading-tight">
-                              {s.name}
-                            </div>
-                            <div className="text-[10px] text-slate-400 font-medium mt-0.5">
-                              Shift
-                            </div>
-                          </div>
+                    <TableRow key={s.name}>
+                      {/* Shift name */}
+                      <TableCell className="pl-6">
+                        <div className="text-slate-800 font-medium leading-tight">
+                          {s.name}
                         </div>
-                      </td>
+                      </TableCell>
 
-                      {/* Hours */}
-                      <td className="py-4 px-4">
-                        <div className="font-semibold text-slate-700 tabular-nums">
+                      {/* Shift Code */}
+                      <TableCell>
+                        <span className="inline-flex items-center rounded-md bg-slate-100/80 px-2 py-1 text-xs font-semibold text-slate-600 ring-1 ring-inset ring-slate-200/50 backdrop-blur-sm shadow-sm">
+                          {s.code}
+                        </span>
+                      </TableCell>
+
+                      {/* Time */}
+                      <TableCell>
+                        <div className="text-slate-700 tabular-nums">
                           {s.checkIn} – {s.checkOut}
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <div className="text-[10px] text-slate-400 font-medium">
-                            Scheduled window
-                          </div>
-                          {s.crossDay && (
-                            <span className="inline-flex items-center rounded-full bg-violet-50 px-1.5 py-0.5 text-[9px] font-bold text-violet-700 ring-1 ring-violet-200/60 uppercase tracking-wide">
+                        {s.crossDay && (
+                          <div className="mt-1">
+                            <span className="inline-flex items-center rounded-full bg-violet-50 px-1.5 py-0.5 text-violet-700 ring-1 ring-violet-200/60 text-[10px] uppercase tracking-wide font-semibold">
                               Cross Day
                             </span>
-                          )}
-                        </div>
-                      </td>
+                          </div>
+                        )}
+                      </TableCell>
 
                       {/* Check-In Window */}
-                      <td className="py-4 px-4">
+                      <TableCell>
                         <div className="flex flex-col gap-1">
-                          <span className="inline-flex w-fit items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200/60">
+                          <span className="inline-flex w-fit items-center rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-700 ring-1 ring-emerald-200/60">
                             From {s.checkInFrom || s.checkIn || "—"}
                           </span>
-                          <span className="inline-flex w-fit items-center rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 ring-1 ring-rose-200/60">
+                          <span className="inline-flex w-fit items-center rounded-full bg-rose-50 px-2 py-0.5 text-rose-700 ring-1 ring-rose-200/60">
                             Until {s.checkInUntil || "—"}
                           </span>
                         </div>
-                      </td>
+                      </TableCell>
 
                       {/* Check-Out Window */}
-                      <td className="py-4 px-4">
+                      <TableCell>
                         <div className="flex flex-col gap-1">
-                          <span className="inline-flex w-fit items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-200/60">
+                          <span className="inline-flex w-fit items-center rounded-full bg-amber-50 px-2 py-0.5 text-amber-700 ring-1 ring-amber-200/60">
                             From {s.checkOutFrom || s.checkOut || "—"}
                           </span>
-                          <span className="inline-flex w-fit items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 ring-1 ring-indigo-200/60">
+                          <span className="inline-flex w-fit items-center rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700 ring-1 ring-indigo-200/60">
                             Until {s.checkOutUntil || "—"}
                           </span>
                         </div>
-                      </td>
+                      </TableCell>
+
+                      {/* Capacity */}
+                      <TableCell className="text-center">
+                        <span className="font-semibold text-slate-600">{capacity}</span>
+                      </TableCell>
 
                       {/* Assigned */}
-                      <td className="py-4 px-4 text-center">
-                        <div className="text-base font-black text-slate-800">{s.assigned}</div>
-                        <div className="text-[10px] text-slate-400">of {capacity}</div>
-                      </td>
+                      <TableCell className="text-center">
+                        <div className="text-slate-800">{s.assigned}</div>
+                        <div className="text-slate-400">of {capacity}</div>
+                      </TableCell>
 
                       {/* Coverage bar */}
-                      <td className="py-4 px-4 min-w-[140px]">
+                      <TableCell className="min-w-[140px]">
                         <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[10px] text-slate-400 font-semibold">Coverage</span>
-                          <span className="text-[10px] font-bold text-slate-600">{pct}%</span>
+                          <span className="text-slate-400">Coverage</span>
+                          <span className="text-slate-600">{pct}%</span>
                         </div>
                         <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100/80">
                           <div
@@ -314,33 +315,40 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
                             style={{ width: `${pct}%` }}
                           />
                         </div>
-                      </td>
+                      </TableCell>
 
                       {/* Actions */}
-                      <td className="py-4 pl-4 pr-6 text-right">
+                      <TableCell className="pr-6 text-right">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => setEditingShift(s)}
-                          className="h-7 px-3 rounded-lg text-[10px] font-semibold text-slate-500 hover:bg-white hover:text-indigo-600 hover:shadow-sm transition-all gap-1"
+                          className="h-7 px-3 rounded-lg text-slate-500 hover:bg-white hover:text-indigo-600 hover:shadow-sm transition-all gap-1"
                         >
                           <Edit className="h-3 w-3" />
                           Edit
                         </Button>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })
               )}
-            </tbody>
-          </table>
+          </TableBody>
+        </Table>
+        <div className="border-t border-slate-100/60 bg-white/40">
+          <TableFooterPagination
+            total={filteredShifts.length}
+            shown={displayedShifts.length}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
 
       {/* ── Edit Shift Modal ── */}
       {editingShift && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/40 bg-white/85 p-6 shadow-2xl backdrop-blur-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+          <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/80 bg-white/75 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] ring-1 ring-black/5">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-200/50 pb-3 shrink-0">
               <div>
@@ -367,12 +375,14 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
                 const name = (fd.get("name") as string).trim();
+                const code = (fd.get("code") as string).toUpperCase();
                 const start = fd.get("start") as string;
                 const end = fd.get("end") as string;
                 const checkInFrom = fd.get("checkInFrom") as string;
                 const checkInUntil = fd.get("checkInUntil") as string;
                 const checkOutFrom = fd.get("checkOutFrom") as string;
                 const checkOutUntil = fd.get("checkOutUntil") as string;
+                const capacityVal = fd.get("capacity") as string;
                 const tone = fd.get("tone") as string;
 
                 const crossDay =
@@ -381,12 +391,14 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
 
                 if (
                   !name ||
+                  !code ||
                   !start ||
                   !end ||
                   !checkInFrom ||
                   !checkInUntil ||
                   !checkOutFrom ||
-                  !checkOutUntil
+                  !checkOutUntil ||
+                  !capacityVal
                 ) {
                   toast.error("Please fill in all required fields.");
                   return;
@@ -408,6 +420,7 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
                       ? {
                           ...s,
                           name,
+                          code,
                           checkIn,
                           checkOut,
                           time: `${checkIn} – ${checkOut}`,
@@ -415,6 +428,7 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
                           checkInUntil: to12(checkInUntil),
                           checkOutFrom: to12(checkOutFrom),
                           checkOutUntil: to12(checkOutUntil),
+                          capacity: parseInt(capacityVal, 10),
                           tone,
                           iconName,
                           crossDay,
@@ -427,21 +441,32 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
               }}
               className="mt-4 space-y-4 text-left overflow-y-auto pr-1"
             >
-              {/* Name */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-semibold text-slate-600">Shift Name *</label>
-                <Input
-                  name="name"
-                  defaultValue={editingShift.name}
-                  required
-                  className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs"
-                />
+              {/* Name & Code */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold text-slate-600">Shift Name *</label>
+                  <Input
+                    name="name"
+                    defaultValue={editingShift.name}
+                    required
+                    className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs transition-all duration-200"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold text-slate-600">Shift Code *</label>
+                  <Input
+                    name="code"
+                    defaultValue={editingShift.code}
+                    required
+                    className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs uppercase transition-all duration-200"
+                  />
+                </div>
               </div>
 
-              {/* Shift Hours */}
+              {/* Time */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">
-                  Shift Hours *
+                  Time *
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
@@ -451,7 +476,7 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
                       name="start"
                       defaultValue={to24(editingShift.checkIn)}
                       required
-                      className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs font-semibold"
+                      className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                     />
                   </div>
                   <div className="space-y-1">
@@ -461,110 +486,101 @@ export function ShiftsView({ searchQuery, shiftsList, setShiftsList }: ShiftsVie
                       name="end"
                       defaultValue={to24(editingShift.checkOut)}
                       required
-                      className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs font-semibold"
+                      className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Check-In Window */}
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3.5 space-y-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
-                  <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide">
-                    Check-In Window
-                  </span>
-                </div>
+              {/* Check In */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">
+                  Check In *
+                </label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-500 font-semibold">
-                      Starts From *
-                    </label>
+                    <label className="text-[10px] text-slate-500 font-medium">Starts From</label>
                     <Input
                       type="time"
                       name="checkInFrom"
                       defaultValue={to24(editingShift.checkInFrom || editingShift.checkIn)}
                       required
-                      className="h-9 border-emerald-200 focus-visible:ring-emerald-500 bg-white text-xs font-semibold"
+                      className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                     />
-                    <p className="text-[9px] text-slate-400 font-medium">
-                      Earliest allowed check-in
-                    </p>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-500 font-semibold">Stops At *</label>
+                    <label className="text-[10px] text-slate-500 font-medium">Stops At</label>
                     <Input
                       type="time"
                       name="checkInUntil"
                       defaultValue={to24(editingShift.checkInUntil || editingShift.checkIn)}
                       required
-                      className="h-9 border-rose-200 focus-visible:ring-rose-500 bg-white text-xs font-semibold"
+                      className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                     />
-                    <p className="text-[9px] text-slate-400 font-medium">
-                      Latest accepted check-in
-                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Check-Out Window */}
-              <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3.5 space-y-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_6px_#6366f1]" />
-                  <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wide">
-                    Check-Out Window
-                  </span>
-                </div>
+              {/* Check Out */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">
+                  Check Out *
+                </label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-500 font-semibold">
-                      Starts From *
-                    </label>
+                    <label className="text-[10px] text-slate-500 font-medium">Starts From</label>
                     <Input
                       type="time"
                       name="checkOutFrom"
                       defaultValue={to24(editingShift.checkOutFrom || editingShift.checkOut)}
                       required
-                      className="h-9 border-amber-200 focus-visible:ring-amber-500 bg-white text-xs font-semibold"
+                      className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                     />
-                    <p className="text-[9px] text-slate-400 font-medium">
-                      Earliest allowed check-out
-                    </p>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-500 font-semibold">Stops At *</label>
+                    <label className="text-[10px] text-slate-500 font-medium">Stops At</label>
                     <Input
                       type="time"
                       name="checkOutUntil"
                       defaultValue={to24(editingShift.checkOutUntil || editingShift.checkOut)}
                       required
-                      className="h-9 border-indigo-200 focus-visible:ring-indigo-500 bg-white text-xs font-semibold"
+                      className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                     />
-                    <p className="text-[9px] text-slate-400 font-medium">
-                      Latest overtime check-out
-                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Theme Color */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-semibold text-slate-600">
-                  Display Theme Color
-                </label>
-                <select
-                  name="tone"
-                  defaultValue={editingShift.tone}
-                  className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
-                >
-                  <option value="indigo">Indigo</option>
-                  <option value="emerald">Emerald</option>
-                  <option value="amber">Amber</option>
-                  <option value="rose">Rose</option>
-                  <option value="sky">Sky</option>
-                  <option value="violet">Violet</option>
-                  <option value="slate">Slate</option>
-                </select>
+              {/* Capacity & Theme Color */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold text-slate-600">Capacity / Max</label>
+                  <Input
+                    type="number"
+                    name="capacity"
+                    defaultValue={editingShift.capacity || 100}
+                    min="1"
+                    required
+                    className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs transition-all duration-200"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold text-slate-600">
+                    Display Theme Color
+                  </label>
+                  <select
+                    name="tone"
+                    defaultValue={editingShift.tone}
+                    className="flex h-9 w-full rounded-md border border-white/80 bg-white/70 backdrop-blur-md px-3 py-1 text-xs shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] transition-all duration-200 focus-visible:bg-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
+                  >
+                    <option value="indigo">Indigo</option>
+                    <option value="emerald">Emerald</option>
+                    <option value="amber">Amber</option>
+                    <option value="rose">Rose</option>
+                    <option value="sky">Sky</option>
+                    <option value="violet">Violet</option>
+                    <option value="slate">Slate</option>
+                  </select>
+                </div>
               </div>
 
               {/* Cross Day */}

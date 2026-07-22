@@ -1,8 +1,9 @@
 import { DevicesViewProps } from "./types";
-import { useMemo } from "react";
-import { Cpu, FileText } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo, useState } from "react";
+import { Cpu, FileText, Edit, Check } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -15,10 +16,14 @@ import { cn } from "@/lib/utils";
 import { initialDevices, syncLogs } from "@/lib/mockData";
 
 export function DevicesView({ searchQuery }: DevicesViewProps) {
+  const [devices, setDevices] = useState(initialDevices);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editLocation, setEditLocation] = useState<string>("");
+
   const filteredDevices = useMemo(() => {
-    if (!searchQuery) return initialDevices;
+    if (!searchQuery) return devices;
     const q = searchQuery.toLowerCase();
-    return initialDevices.filter(
+    return devices.filter(
       (d) =>
         d.id.toLowerCase().includes(q) ||
         d.location.toLowerCase().includes(q) ||
@@ -28,32 +33,30 @@ export function DevicesView({ searchQuery }: DevicesViewProps) {
         d.sn.toLowerCase().includes(q) ||
         d.status.toLowerCase().includes(q),
     );
-  }, [searchQuery]);
-
-  const filteredLogs = useMemo(() => {
-    if (!searchQuery) return syncLogs;
-    const q = searchQuery.toLowerCase();
-    return syncLogs.filter(
-      (l) =>
-        l.eventId.toLowerCase().includes(q) ||
-        l.deviceId.toLowerCase().includes(q) ||
-        l.employee.toLowerCase().includes(q) ||
-        l.time.toLowerCase().includes(q) ||
-        l.method.toLowerCase().includes(q) ||
-        l.status.toLowerCase().includes(q),
-    );
-  }, [searchQuery]);
+  }, [searchQuery, devices]);
 
   const stats = useMemo(() => {
     return {
-      total: initialDevices.length,
-      online: initialDevices.filter((d) => d.status === "Online").length,
-      offline: initialDevices.filter((d) => d.status === "Offline").length,
+      total: devices.length,
+      online: devices.filter((d) => d.status === "Online").length,
+      offline: devices.filter((d) => d.status === "Offline").length,
     };
-  }, []);
+  }, [devices]);
+
+  const handleEditClick = (id: string, currentLocation: string) => {
+    setEditingId(id);
+    setEditLocation(currentLocation);
+  };
+
+  const handleSaveClick = (id: string) => {
+    setDevices((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, location: editLocation } : d))
+    );
+    setEditingId(null);
+  };
 
   return (
-    <div className="space-y-8">
+    <div className="h-full flex flex-col space-y-5 min-h-0">
       {/* Stats Section */}
       <div className="grid gap-3 sm:grid-cols-3 shrink-0">
         {[
@@ -108,113 +111,118 @@ export function DevicesView({ searchQuery }: DevicesViewProps) {
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Devices List Table */}
-        <Card className="lg:col-span-2 border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
-
-          <CardContent className="p-0 flex-1 overflow-auto custom-scrollbar">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-white shadow-sm">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-2xl border border-white/60 bg-white/60 shadow-sm shadow-slate-200/50 backdrop-blur-xl">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {[
+                "Device ID",
+                "Location",
+                "Model",
+                "Serial No.",
+                "IP",
+                "Last Sync",
+                "Status",
+                "Action",
+              ].map((h, i) => (
+                <TableHead
+                  key={`${h}-${i}`}
+                  className={cn(
+                    i === 0 ? "pl-6" : "",
+                    i === 7 ? "pr-6 text-right" : ""
+                  )}
+                >
+                  {h}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+              {filteredDevices.length === 0 ? (
                 <TableRow>
-                  <TableHead>
-                    Device Details
-                  </TableHead>
-                  <TableHead>Model & SN</TableHead>
-                  <TableHead>Type & IP</TableHead>
-                  <TableHead>Last Synced</TableHead>
-                  <TableHead className="text-right">
-                    Status
-                  </TableHead>
+                  <TableCell colSpan={8} className="py-10 text-center text-slate-400">
+                    No devices match your search.
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredDevices.map((d) => (
-                  <TableRow
-                    key={d.id}
-                    className="hover:bg-indigo-50/10 transition-colors border-b border-slate-100/60 last:border-0"
-                  >
-                    <TableCell>
-                      <div className="font-semibold text-slate-800">{d.location}</div>
-                      <div className="text-[10px] font-mono text-slate-500 mt-0.5">ID: {d.id}</div>
+              ) : (
+                filteredDevices.map((d) => (
+                  <TableRow key={d.id}>
+                    <TableCell className="pl-6 font-mono text-slate-700">
+                      {d.id}
                     </TableCell>
-                    <TableCell className="text-xs">
-                      <div className="font-semibold text-slate-700">{d.model}</div>
-                      <div className="text-[10px] font-mono text-slate-400 mt-0.5">{d.sn}</div>
+                    <TableCell className="text-slate-800 leading-tight">
+                      {editingId === d.id ? (
+                        <input
+                          value={editLocation}
+                          onChange={(e) => setEditLocation(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveClick(d.id);
+                            if (e.key === "Escape") setEditingId(null);
+                          }}
+                          className="border border-indigo-200 bg-white rounded px-2 py-1 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 w-full min-w-[120px]"
+                          autoFocus
+                        />
+                      ) : (
+                        d.location
+                      )}
                     </TableCell>
-                    <TableCell className="text-xs">
-                      <div className="font-medium text-slate-600">{d.type}</div>
-                      <div className="text-slate-400 font-mono text-[10px] mt-0.5">{d.ip}</div>
+                    <TableCell className="text-slate-700">
+                      {d.model}
                     </TableCell>
-                    <TableCell className="text-xs text-slate-500 font-semibold">
+                    <TableCell className="font-mono text-slate-500">
+                      {d.sn}
+                    </TableCell>
+                    <TableCell className="font-mono text-slate-500">
+                      {d.ip}
+                    </TableCell>
+                    <TableCell className="text-slate-500">
                       {d.lastSync}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell>
                       <Badge
                         variant="secondary"
                         className={cn(
-                          "border-0 text-[10px] px-2 py-0.5 font-bold",
+                          "border-0 px-2 py-0.5 shadow-sm/5 inline-flex items-center gap-1.5",
                           d.status === "Online"
                             ? "bg-emerald-50 text-emerald-700"
                             : "bg-rose-50 text-rose-700",
                         )}
                       >
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full animate-pulse",
+                            d.status === "Online" ? "bg-emerald-500" : "bg-rose-500",
+                          )}
+                        />
                         {d.status}
                       </Badge>
                     </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-
-        {/* Logs Table */}
-        <Card className="border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm">
-
-          <CardContent className="p-0 flex-1 overflow-auto custom-scrollbar">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-white shadow-sm">
-                <TableRow>
-                  <TableHead>Punch Event</TableHead>
-                  <TableHead>Scan Details</TableHead>
-                  <TableHead className="text-right">
-                    Sync Status
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredLogs.map((l) => (
-                  <TableRow
-                    key={l.eventId}
-                    className="hover:bg-indigo-50/10 transition-colors border-b border-slate-100/60 last:border-0"
-                  >
-                    <TableCell>
-                      <div className="font-semibold text-slate-800 text-xs">{l.employee}</div>
-                      <div className="text-[9px] text-slate-400 font-mono mt-0.5">{l.time}</div>
-                    </TableCell>
-                    <TableCell className="text-[10px]">
-                      <div className="font-medium text-slate-600">ID: {l.deviceId}</div>
-                      <div className="text-slate-400 font-medium">{l.method}</div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "border-0 text-[9px] px-1.5 py-0.5 font-bold",
-                          l.status === "Success"
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-rose-50 text-rose-700",
-                        )}
-                      >
-                        {l.status}
-                      </Badge>
+                    <TableCell className="pr-6 text-right">
+                      {editingId === d.id ? (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSaveClick(d.id)}
+                          className="h-7 px-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 rounded-lg gap-1 transition-all"
+                        >
+                          <Check className="h-3 w-3" /> Save
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEditClick(d.id, d.location)}
+                          className="h-7 w-7 p-0 rounded-lg text-slate-400 hover:bg-white hover:text-indigo-600 hover:shadow-sm transition-all"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                ))
+              )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

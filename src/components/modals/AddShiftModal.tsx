@@ -16,7 +16,7 @@ export function AddShiftModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/40 bg-white/85 p-6 shadow-2xl backdrop-blur-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/80 bg-white/75 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] ring-1 ring-black/5">
         <div className="flex items-center justify-between border-b border-slate-200/50 pb-3 shrink-0">
           <div>
             <h2 className="text-base font-bold text-slate-800 tracking-tight">Create New Shift</h2>
@@ -39,6 +39,7 @@ export function AddShiftModal({
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
             const name = formData.get("name") as string;
+            const code = (formData.get("code") as string).toUpperCase();
             const start = formData.get("start") as string;
             const end = formData.get("end") as string;
             const checkInFrom = formData.get("checkInFrom") as string;
@@ -51,6 +52,7 @@ export function AddShiftModal({
 
             if (
               !name ||
+              !code ||
               !start ||
               !end ||
               !checkInFrom ||
@@ -82,6 +84,7 @@ export function AddShiftModal({
 
             const newShift = {
               name,
+              code,
               time: timeRange,
               checkIn: formatTime(start),
               checkOut: formatTime(end),
@@ -90,6 +93,7 @@ export function AddShiftModal({
               checkOutFrom: formatTime(checkOutFrom),
               checkOutUntil: formatTime(checkOutUntil),
               assigned: 0,
+              capacity: parseInt(capacityVal, 10),
               iconName,
               tone,
               crossDay,
@@ -101,21 +105,32 @@ export function AddShiftModal({
           }}
           className="mt-4 space-y-4 text-left overflow-y-auto pr-1"
         >
-          {/* Shift Name */}
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-slate-600">Shift Name *</label>
-            <Input
-              name="name"
-              placeholder="E.g. Mid-Day, Night Shift"
-              required
-              className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs"
-            />
+          {/* Shift Name & Code */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-slate-600">Shift Name *</label>
+              <Input
+                name="name"
+                placeholder="E.g. Mid-Day, Night Shift"
+                required
+                className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs transition-all duration-200"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-slate-600">Shift Code *</label>
+              <Input
+                name="code"
+                placeholder="E.g. MOR, DAY"
+                required
+                className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs uppercase transition-all duration-200"
+              />
+            </div>
           </div>
 
-          {/* Core Shift Hours */}
+          {/* Time */}
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">
-              Shift Hours *
+              Time *
             </label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
@@ -124,7 +139,7 @@ export function AddShiftModal({
                   type="time"
                   name="start"
                   required
-                  className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs font-semibold"
+                  className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                 />
               </div>
               <div className="space-y-1">
@@ -133,82 +148,62 @@ export function AddShiftModal({
                   type="time"
                   name="end"
                   required
-                  className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs font-semibold"
+                  className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                 />
               </div>
             </div>
           </div>
 
-          {/* Check-In Grace Window */}
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3.5 space-y-2">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
-              <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide">
-                Check-In Window
-              </span>
-            </div>
-            <p className="text-[10px] text-emerald-700/70 font-medium -mt-1">
-              Set how early employees can check-in and the latest accepted check-in time.
-            </p>
+          {/* Check In */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">
+              Check In *
+            </label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-500 font-semibold">Starts From *</label>
+                <label className="text-[10px] text-slate-500 font-medium">Starts From</label>
                 <Input
                   type="time"
                   name="checkInFrom"
                   required
-                  className="h-9 border-emerald-200 focus-visible:ring-emerald-500 bg-white text-xs font-semibold"
+                  className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                 />
-                <p className="text-[9px] text-slate-400 font-medium">Earliest allowed check-in</p>
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-500 font-semibold">Stops At *</label>
+                <label className="text-[10px] text-slate-500 font-medium">Stops At</label>
                 <Input
                   type="time"
                   name="checkInUntil"
                   required
-                  className="h-9 border-rose-200 focus-visible:ring-rose-500 bg-white text-xs font-semibold"
+                  className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                 />
-                <p className="text-[9px] text-slate-400 font-medium">
-                  Latest accepted check-in (late cutoff)
-                </p>
               </div>
             </div>
           </div>
 
-          {/* Check-Out Grace Window */}
-          <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3.5 space-y-2">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_6px_#6366f1]" />
-              <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wide">
-                Check-Out Window
-              </span>
-            </div>
-            <p className="text-[10px] text-indigo-700/70 font-medium -mt-1">
-              Set how early employees can check-out and when overtime check-outs stop being logged.
-            </p>
+          {/* Check Out */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">
+              Check Out *
+            </label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-500 font-semibold">Starts From *</label>
+                <label className="text-[10px] text-slate-500 font-medium">Starts From</label>
                 <Input
                   type="time"
                   name="checkOutFrom"
                   required
-                  className="h-9 border-amber-200 focus-visible:ring-amber-500 bg-white text-xs font-semibold"
+                  className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                 />
-                <p className="text-[9px] text-slate-400 font-medium">Earliest allowed check-out</p>
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-500 font-semibold">Stops At *</label>
+                <label className="text-[10px] text-slate-500 font-medium">Stops At</label>
                 <Input
                   type="time"
                   name="checkOutUntil"
                   required
-                  className="h-9 border-indigo-200 focus-visible:ring-indigo-500 bg-white text-xs font-semibold"
+                  className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs font-semibold transition-all duration-200"
                 />
-                <p className="text-[9px] text-slate-400 font-medium">
-                  Latest overtime check-out accepted
-                </p>
               </div>
             </div>
           </div>
@@ -226,7 +221,7 @@ export function AddShiftModal({
                 placeholder="50"
                 min="1"
                 required
-                className="h-9 border-slate-200 focus-visible:ring-indigo-500 text-xs"
+                className="h-9 bg-white/70 backdrop-blur-md border-white/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] focus-visible:bg-white focus-visible:ring-indigo-500 text-xs transition-all duration-200"
               />
             </div>
             <div className="space-y-1.5">
@@ -236,7 +231,7 @@ export function AddShiftModal({
               <select
                 name="tone"
                 defaultValue="indigo"
-                className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
+                className="flex h-9 w-full rounded-md border border-white/80 bg-white/70 backdrop-blur-md px-3 py-1 text-xs shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] transition-all duration-200 focus-visible:bg-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
               >
                 <option value="indigo">Indigo</option>
                 <option value="emerald">Emerald</option>

@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -244,62 +245,71 @@ export function DailyReportView({
         ))}
       </div>
 
-      <Card className="border-slate-200/60 bg-white/70 backdrop-blur-md shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
-        <CardContent className="p-0 flex-1 overflow-auto custom-scrollbar">
-          <Table>
-            <TableHeader className="sticky top-0 z-10 bg-white shadow-sm">
-              <TableRow>
-                <TableHead>Employee</TableHead>
-                <TableHead>Role & Dept</TableHead>
-                <TableHead>Check-in Time</TableHead>
-                <TableHead>Device ID</TableHead>
-                <TableHead>Verification</TableHead>
-                <TableHead className="text-center">
-                  Work Hours
-                </TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredLogs.map((l) => (
-                <TableRow
-                  key={l.name}
-                  className="hover:bg-indigo-50/10 transition-colors border-b border-slate-100/60 last:border-0"
-                >
-                  <TableCell className="font-semibold text-slate-800">{l.name}</TableCell>
-                  <TableCell className="text-xs">
-                    <div className="font-medium text-slate-600">{l.role}</div>
-                    <div className="text-slate-400 font-medium">{l.dept}</div>
-                  </TableCell>
-                  <TableCell className="text-xs font-semibold tabular-nums text-slate-600">
-                    {l.checkIn}
-                  </TableCell>
-                  <TableCell className="text-xs font-mono text-slate-505">
-                    {l.device}
-                  </TableCell>
-                  <TableCell className="text-xs text-slate-500">{l.verify}</TableCell>
-                  <TableCell className="text-xs text-center font-bold tabular-nums text-slate-700">
-                    {l.hoursLogged > 0 ? `${l.hoursLogged.toFixed(1)} hrs` : "—"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "border-0 text-[10px] px-2 py-0.5 font-semibold",
-                        l.status === "Present" && "bg-emerald-50 text-emerald-700",
-                        l.status === "Late" && "bg-amber-50 text-amber-700",
-                        l.status === "Absent" && "bg-rose-50 text-rose-700",
-                      )}
-                    >
-                      {l.status}
-                    </Badge>
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden rounded-2xl border border-white/60 bg-white/60 shadow-sm shadow-slate-200/50 backdrop-blur-xl">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pl-6">Employee</TableHead>
+              <TableHead>Role & Dept</TableHead>
+              <TableHead>Check-in Time</TableHead>
+              <TableHead>Device ID</TableHead>
+              <TableHead>Verification</TableHead>
+              <TableHead className="text-center">Work Hours</TableHead>
+              <TableHead className="pr-6">Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+              {filteredLogs.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="py-10 text-center text-slate-400">
+                    No logs found.
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              ) : (
+                filteredLogs.map((l) => (
+                  <TableRow key={l.name}>
+                    <TableCell className="pl-6 pr-4 text-slate-800">{l.name}</TableCell>
+                    <TableCell>
+                      <div className="text-slate-700">{l.role}</div>
+                      <div className="text-slate-400 mt-0.5">{l.dept}</div>
+                    </TableCell>
+                    <TableCell className="tabular-nums text-slate-600">
+                      {l.checkIn}
+                    </TableCell>
+                    <TableCell className="font-mono text-slate-500">
+                      {l.device}
+                    </TableCell>
+                    <TableCell className="text-slate-500">{l.verify}</TableCell>
+                    <TableCell className="text-center tabular-nums text-slate-700">
+                      {l.hoursLogged > 0 ? `${l.hoursLogged.toFixed(1)} hrs` : "—"}
+                    </TableCell>
+                    <TableCell className="pl-4 pr-6">
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "border-0 px-2 py-0.5 shadow-sm/5 inline-flex items-center gap-1.5",
+                          l.status === "Present" && "bg-emerald-50 text-emerald-700",
+                          l.status === "Late" && "bg-amber-50 text-amber-700",
+                          l.status === "Absent" && "bg-rose-50 text-rose-700",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full animate-pulse",
+                            l.status === "Present" && "bg-emerald-500",
+                            l.status === "Late" && "bg-amber-500",
+                            l.status === "Absent" && "bg-rose-500"
+                          )}
+                        />
+                        {l.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
